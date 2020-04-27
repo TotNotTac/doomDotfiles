@@ -1,0 +1,6 @@
+# key: cr
+# name: createTable
+# --
+CREATE TABLE ${tableName} (
+$0
+);

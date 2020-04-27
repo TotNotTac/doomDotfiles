@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name:ShowTables
+# key:tbl
+# --
+SHOW tables;

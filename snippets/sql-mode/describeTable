@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name:describeTable
+# key:desc
+# --
+DESCRIBE ${table};

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name:leftJoin
+# key:lj
+# --
+LEFT JOIN ${table}
+ON ${condition}

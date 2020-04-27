@@ -1,0 +1,4 @@
+# key: schema
+# name: showSchemas
+# --
+SHOW schemas;

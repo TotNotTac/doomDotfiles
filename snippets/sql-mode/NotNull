@@ -1,0 +1,5 @@
+# key: nn
+# name: NotNull
+# --
+NOT NULL${1:,
+}$0

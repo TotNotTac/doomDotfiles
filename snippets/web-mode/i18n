@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: i18n
+# key: i8
+# --
+<i18n id="$0"/>

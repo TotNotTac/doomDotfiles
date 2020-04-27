@@ -1,0 +1,5 @@
+# key: pk
+# name: primaryKey
+# --
+${1:id} ${2:INT} PRIMARY KEY ${3:AUTO_INCREMENT}${4:,
+}$0

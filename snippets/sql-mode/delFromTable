@@ -1,0 +1,5 @@
+# key: del
+# name: delFromTable
+# --
+DELETE FROM ${table}
+WHERE $0;

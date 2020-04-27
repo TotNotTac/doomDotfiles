@@ -1,0 +1,4 @@
+# key: sel
+# name: SELECT
+# --
+SELECT ${column} FROM ${table}

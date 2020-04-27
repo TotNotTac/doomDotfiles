@@ -1,0 +1,4 @@
+# key: *
+# name: SELECT ALL
+# --
+SELECT * FROM ${table}

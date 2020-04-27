@@ -1,0 +1,7 @@
+# key: i
+# name: insert
+# --
+INSERT INTO ${1:table}
+(${2:columns})
+VALUES
+${3:values};

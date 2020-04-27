@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name:innerJoin
+# key:ij
+# --
+INNER JOIN ${table}
+ON ${condition}

@@ -1,0 +1,7 @@
+# key: fk
+# name: foreignKey
+# --
+${1:name} ${INT},
+$0
+CONSTRAINT fk_$1 FOREIGN KEY $1
+REFERENCES ${table}(${column})

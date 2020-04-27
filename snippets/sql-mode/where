@@ -1,0 +1,4 @@
+# key: w
+# name: where
+# --
+WHERE ${val1} = ${val2}

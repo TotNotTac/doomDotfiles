@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name:dropTable
+# key:dr
+# --
+DROP TABLE ${table};
