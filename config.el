@@ -25,7 +25,7 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 (setq doom-theme 'doom-one)
-
+;;*
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
@@ -69,10 +69,56 @@
 
 (setq winum-assign-functions '(winum-assign-0-to-neotree))
 
+;;;User variables;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(setq evil-escape-key-sequence nil)
 
-;; Quick window switching with Meta-0..9
+;; Switch to the new window after splitting
+(setq evil-split-window-below nil
+      evil-vsplit-window-right t)
+
+;; Popup rules
+
+(set-popup-rule! "\\*doom:vterm-popup.*" :side 'right :size 0.3)
+
+;;;User functions;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun tot/save-and-kill-buffer ()
+  "Save a buffer before killing"
+  (interactive)
+  (save-buffer)
+  (kill-buffer))
+
+(defun tot/window-split-smart ()
+  "Splits window into two. It'll split so the difference between the height and the width of a window is as small as possible"
+  (interactive)
+  (if (> (window-pixel-height) (window-pixel-width))
+      ;; then
+      (evil-window-split)
+    ;; else
+    (evil-window-vsplit)
+    ))
+
+;;;User keybindings;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (map!
+ ;; Yasnippet
+ :ni
+ "C-SPC" #'yas-expand
+
+ :nvime
+ "M-n" #'evil-buffer-new
+ "M-w" #'tot/save-and-kill-buffer
+ "M-N" #'+workspace/new
+ "M-W" #'+workspace/delete
+ "C-M-N" #'tot/window-split-smart
+ "C-M-W" #'evil-window-delete
+
+ (:map org-agenda-mode-map
+   "M-l" #'org-agenda-later
+   "M-h" #'org-agenda-earlier)
+
+ ;; Quick window switching with Meta-0..9
  "M-1" 'winum-select-window-1
  "M-2" 'winum-select-window-2
  "M-3" 'winum-select-window-3
@@ -82,10 +128,9 @@
  "M-7" 'winum-select-window-7
  "M-8" 'winum-select-window-8
  "M-9" 'winum-select-window-9
- "M-0" 'tot/neotree-toggle-function)
+ "M-0" 'tot/neotree-toggle-function
 
-;; Quick workspace switch with Shift+Meta-0..9
-(map!
+ ;; Quick workspace switch with Shift+Meta-0..9
  "M-!" '+workspace/switch-to-0
  "M-@" '+workspace/switch-to-1
  "M-#" '+workspace/switch-to-2
@@ -95,4 +140,9 @@
  "M-&" '+workspace/switch-to-6
  "M-*" '+workspace/switch-to-7
  "M-(" '+workspace/switch-to-8
- "M-)" '+workspace/switch-to-9)
+ "M-)" '+workspace/switch-to-9
+
+ (:leader
+   "b c" #'tot/save-and-kill-buffer
+   "/" #'swiper
+   "?" #'+ivy/project-search))
