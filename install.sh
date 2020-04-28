@@ -21,7 +21,9 @@ fi
 
 if [ $error -eq 1 ]
 then
-    echo "dependency requirements were not met"
+    echo "Dependency requirements were not met."
+    echo "Aborting..."
+    echo ""
     exit 1
 fi
 
