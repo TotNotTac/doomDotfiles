@@ -52,6 +52,20 @@
 ;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
 ;; they are implemented.
 
+;;;User variables;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(setq evil-escape-key-sequence nil)
+
+;; Switch to the new window after splitting
+(setq evil-split-window-below nil
+      evil-vsplit-window-right t)
+
+;; Popup rules
+
+(set-popup-rule! "\\*doom:vterm-popup.*" :side 'right :size 0.3)
+
+;;;User functions;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; Winum neotree settings
 (defun winum-assign-0-to-neotree ()
   (when (string-match-p (buffer-name) ".*\\*NeoTree\\*.*") 0))
@@ -68,25 +82,11 @@
     ))
 
 (setq winum-assign-functions '(winum-assign-0-to-neotree))
-
-;;;User variables;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(setq evil-escape-key-sequence nil)
-
-;; Switch to the new window after splitting
-(setq evil-split-window-below nil
-      evil-vsplit-window-right t)
-
-;; Popup rules
-
-(set-popup-rule! "\\*doom:vterm-popup.*" :side 'right :size 0.3)
-
-;;;User functions;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defun tot/save-and-kill-buffer ()
   "Save a buffer before killing"
   (interactive)
-  (save-buffer)
+  (unless (string-match-p ".*\\*.*\\*.*" (buffer-name))
+    (save-buffer))
   (kill-buffer))
 
 (defun tot/window-split-smart ()
@@ -109,10 +109,10 @@
  :nvime
  "M-n" #'evil-buffer-new
  "M-w" #'tot/save-and-kill-buffer
- "M-N" #'+workspace/new
- "M-W" #'+workspace/delete
- "C-M-N" #'tot/window-split-smart
- "C-M-W" #'evil-window-delete
+ "C-M-n" #'+workspace/new
+ "C-M-w" #'+workspace/delete
+ "M-N" #'tot/window-split-smart
+ "M-W" #'evil-window-delete
 
  (:map org-agenda-mode-map
    "M-l" #'org-agenda-later
@@ -131,16 +131,16 @@
  "M-0" 'tot/neotree-toggle-function
 
  ;; Quick workspace switch with Shift+Meta-0..9
- "M-!" '+workspace/switch-to-0
- "M-@" '+workspace/switch-to-1
- "M-#" '+workspace/switch-to-2
- "M-$" '+workspace/switch-to-3
- "M-%" '+workspace/switch-to-4
- "M-^" '+workspace/switch-to-5
- "M-&" '+workspace/switch-to-6
- "M-*" '+workspace/switch-to-7
- "M-(" '+workspace/switch-to-8
- "M-)" '+workspace/switch-to-9
+ "C-M-1" '+workspace/switch-to-0
+ "C-M-2" '+workspace/switch-to-1
+ "C-M-3" '+workspace/switch-to-2
+ "C-M-4" '+workspace/switch-to-3
+ "C-M-5" '+workspace/switch-to-4
+ "C-M-6" '+workspace/switch-to-5
+ "C-M-7" '+workspace/switch-to-6
+ "C-M-8" '+workspace/switch-to-7
+ "C-M-9" '+workspace/switch-to-8
+ "C-M-0" '+workspace/switch-to-9
 
  (:leader
    "b c" #'tot/save-and-kill-buffer
