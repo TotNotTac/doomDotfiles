@@ -32,13 +32,13 @@
        ;;fill-column       ; a `fill-column' indicator
        hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
        ;;hydra
-       ;;indent-guides     ; highlighted indent columns
+       indent-guides     ; highlighted indent columns
        modeline          ; snazzy, Atom-inspired modeline, plus API
        ;;nav-flash         ; blink cursor line after big motions
        neotree           ; a project drawer, like NERDTree for vim
        ophints           ; highlight the region an operation acts on
        (popup +defaults)   ; tame sudden yet inevitable temporary windows
-       ;; pretty-code       ; ligatures or substitute text with pretty symbols
+       pretty-code       ; ligatures or substitute text with pretty symbols
        ;; tabs              ; an tab bar for Emacs
        ;; treemacs          ; a project drawer, like neotree but cooler
        unicode           ; extended unicode support for various languages
@@ -63,7 +63,7 @@
        word-wrap         ; soft wrapping with language-aware indent
 
        :emacs
-       dired             ; making dired pretty [functional]
+       (dired +icons +ranger)             ; making dired pretty [functional]
        electric          ; smarter, keyword-based electric-indent
        ;;ibuffer         ; interactive buffer management
        undo              ; persistent, smarter undo for your inevitable mistakes
@@ -146,7 +146,7 @@
        python            ; beautiful is better than ugly
        ;;qt                ; the 'cutest' gui framework ever
        ;;racket            ; a DSL for DSLs
-       ;;rest              ; Emacs as a REST client
+       rest              ; Emacs as a REST client
        ;;rst               ; ReST in peace
        ;;(ruby +rails)     ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
        ;;rust              ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
@@ -162,9 +162,8 @@
 
        :email
        ;;(mu4e +gmail)
-       ;;notmuch
-       ;;(wanderlust +gmail)
-
+       ;; notmuch
+       ;; (wanderlust +gmail)
        :app
        calendar
        ;;irc               ; how neckbeards socialize
@@ -173,4 +172,5 @@
 
        :config
        ;;literate
-       (default +bindings +smartparens))
+       (default +bindings +smartparens)
+       )

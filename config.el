@@ -52,6 +52,8 @@
 ;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
 ;; they are implemented.
 
+;;;Package configuration;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;;;User variables;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setq evil-escape-key-sequence nil)
@@ -64,7 +66,12 @@
 
 (set-popup-rule! "\\*doom:vterm-popup.*" :side 'right :size 0.3)
 
+;; Mysql
+(setq sql-mysql-options '("--protocol" "tcp" "-P" "3308"))
+
 ;;;User functions;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(add-hook 'sql-interactive-mode-hook 'yas-minor-mode-on)
 
 ;; Winum neotree settings
 (defun winum-assign-0-to-neotree ()
@@ -114,9 +121,15 @@
  "M-N" #'tot/window-split-smart
  "M-W" #'evil-window-delete
 
+ "M-f" #'avy-goto-word-1
+
  (:map org-agenda-mode-map
-   "M-l" #'org-agenda-later
-   "M-h" #'org-agenda-earlier)
+  "M-l" #'org-agenda-later
+  "M-h" #'org-agenda-earlier)
+
+ (:map yas-minor-mode-map
+  :i
+  "SPC-TAB" 'yas-expand)
 
  ;; Quick window switching with Meta-0..9
  "M-1" 'winum-select-window-1
@@ -129,6 +142,16 @@
  "M-8" 'winum-select-window-8
  "M-9" 'winum-select-window-9
  "M-0" 'tot/neotree-toggle-function
+ (:leader ;; Backup keybindings for in terminal mode
+  "1" 'winum-select-window-1
+  "2" 'winum-select-window-2
+  "3" 'winum-select-window-3
+  "4" 'winum-select-window-4
+  "5" 'winum-select-window-5
+  "6" 'winum-select-window-6
+  "7" 'winum-select-window-7
+  "8" 'winum-select-window-8
+  "9" 'winum-select-window-9)
 
  ;; Quick workspace switch with Shift+Meta-0..9
  "C-M-1" '+workspace/switch-to-0
@@ -143,6 +166,6 @@
  "C-M-0" '+workspace/switch-to-9
 
  (:leader
-   "b c" #'tot/save-and-kill-buffer
-   "/" #'swiper
-   "?" #'+ivy/project-search))
+  "b c" #'tot/save-and-kill-buffer
+  "/" #'swiper
+  "?" #'+ivy/project-search))

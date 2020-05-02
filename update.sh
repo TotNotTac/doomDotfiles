@@ -6,6 +6,6 @@ git pull
 
 cd ~/.emacs.d
 git pull
-./bin/doom upgrade
+./bin/doom sync -e
 
 cd $dir
