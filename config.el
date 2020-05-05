@@ -52,8 +52,6 @@
 ;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
 ;; they are implemented.
 
-;;;Package configuration;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ;;;User variables;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setq evil-escape-key-sequence nil)
@@ -109,10 +107,6 @@
 ;;;User keybindings;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (map!
- ;; Yasnippet
- :ni
- "C-SPC" #'yas-expand
-
  :nvime
  "M-n" #'evil-buffer-new
  "M-w" #'tot/save-and-kill-buffer
@@ -129,7 +123,7 @@
 
  (:map yas-minor-mode-map
   :i
-  "SPC-TAB" 'yas-expand)
+  "C-SPC" 'yas-expand)
 
  ;; Quick window switching with Meta-0..9
  "M-1" 'winum-select-window-1
@@ -169,3 +163,10 @@
   "b c" #'tot/save-and-kill-buffer
   "/" #'swiper
   "?" #'+ivy/project-search))
+
+;;;Package configuration;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; eclim
+(after! 'eclim
+  (setq eclim-executable "/home/silas/.eclipse/org.eclipse.platform_4.15.0_155965261_linux_gtk_x86_64/eclimd"
+        eclimd-autostart t))
