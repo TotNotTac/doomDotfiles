@@ -94,6 +94,12 @@
     (save-buffer))
   (kill-buffer))
 
+(defun tot/kill-buffer-and-close-window ()
+  "Kill and save buffer, then close the window"
+  (interactive)
+  (tot/save-and-kill-buffer)
+  (delete-window))
+
 (defun tot/window-split-smart ()
   "Splits window into two. It'll split so the difference between the height and the width of a window is as small as possible"
   (interactive)
@@ -116,6 +122,9 @@
  "M-W" #'evil-window-delete
 
  "M-f" #'avy-goto-word-1
+
+ (:leader
+  "b x" #'tot/kill-buffer-and-close-window)
 
  (:map org-agenda-mode-map
   "M-l" #'org-agenda-later
