@@ -54,7 +54,33 @@
 
 ;;;User variables;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(setq evil-escape-key-sequence nil)
+(setq evil-escape-key-sequence nil
+      treemacs-position 'right
+      neo-window-position 'left
+      neo-window-width 30
+      neo-autorefresh t)
+
+(setq +pretty-code-symbols '(:name "»"
+                             :src_block "»"
+                             :src_block_end "«"
+                             :quote "“"
+                             :quote_end "”"
+                             :lambda "λ"
+                             :def "ƒ"
+                             :defun "ƒ"
+                             :composition "∘"
+                             :map "↦"
+                             :null "∅"
+                             :not "￢"
+                             :in "∈"
+                             :not-in "∉"
+                             :and "∧"
+                             :or "∨"
+                             :for "∀"
+                             :some "∃"
+                             :tuple "⨂"
+                             :pipe ""
+                             :dot "•"))
 
 ;; Switch to the new window after splitting
 (setq evil-split-window-below nil
@@ -120,6 +146,9 @@
  "C-M-w" #'+workspace/delete
  "M-N" #'tot/window-split-smart
  "M-W" #'evil-window-delete
+ "M-i" #'er/expand-region
+
+ :ni
 
  "M-f" #'avy-goto-word-1
 
@@ -144,7 +173,7 @@
  "M-7" 'winum-select-window-7
  "M-8" 'winum-select-window-8
  "M-9" 'winum-select-window-9
- "M-0" 'tot/neotree-toggle-function
+ "M-0" #'tot/neotree-toggle-function
  (:leader ;; Backup keybindings for in terminal mode
   "1" 'winum-select-window-1
   "2" 'winum-select-window-2
