@@ -245,3 +245,7 @@
 (after! 'eclim
   (setq eclim-executable "/home/silas/.eclipse/org.eclipse.platform_4.15.0_155965261_linux_gtk_x86_64/eclimd"
         eclimd-autostart t))
+
+;;;Hooks;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(add-hook 'delete-frame-hook '+workspace/kill-session)
