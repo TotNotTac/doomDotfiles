@@ -99,12 +99,13 @@
 
 ;; Winum neotree settings
 (defun winum-assign-0-to-neotree ()
-  (when (string-match-p (buffer-name) ".*\\*NeoTree\\*.*") 0))
+  (when (string-match-p ".*NeoTree.*" (buffer-name)) 0))
+
 
 (defun tot/neotree-toggle-function ()
   (interactive)
   (if (neo-global--window-exists-p)
-      (if (string-match-p (buffer-name) ".\\*NeoTree\\*.*")
+      (if (string-match-p ".\\*NeoTree\\*.*" (buffer-name))
           (neotree-hide)
         ;; else
         (winum-select-window-0))
@@ -113,6 +114,8 @@
     ))
 
 (setq winum-assign-functions '(winum-assign-0-to-neotree))
+(setq winum-auto-assign-0-to-minibuffer nil)
+
 (defun tot/save-and-kill-buffer ()
   "Save a buffer before killing"
   (interactive)
