@@ -139,6 +139,22 @@
     (evil-window-vsplit)
     ))
 
+;; EShell
+(defun tot/eshell-other-window ()
+  "Open EShell in another window"
+  (interactive)
+  (tot/window-split-smart)
+  (eshell))
+
+(defun tot/eshell-insert-at-beginning ()
+  "Goes to the beginning of prompt and goes into insert mode"
+  (interactive)
+  (eshell-bol)
+  (evil-insert-state))
+
+(defalias 'eshell/o 'find-file)
+(defalias 'eshell/sp 'find-file-other-window)
+
 ;;;User keybindings;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (map!
@@ -164,7 +180,7 @@
 
  (:map yas-minor-mode-map
   :i
-  "C-SPC" 'yas-expand)
+  "C-SPC" #'yas-expand)
 
  ;; Quick window switching with Meta-0..9
  "M-1" 'winum-select-window-1
@@ -203,7 +219,25 @@
  (:leader
   "b c" #'tot/save-and-kill-buffer
   "/" #'swiper
-  "?" #'+ivy/project-search))
+  "?" #'+ivy/project-search
+
+  "o t" #'tot/eshell-other-window
+  "o T" #'eshell))
+
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (add-to-list 'eshell-visual-commands "htop")
+
+            (map! :map eshell-mode-map
+                  :n
+                  "I" #'tot/eshell-insert-at-beginning
+                  :ni
+                  "M->" #'lispy-slurp
+                  "M-<" #'lispy-barf
+                  "M-]" #'lispy-forward
+                  "M-[" #'lispy-backward
+                  "M-DEL" #'lispy-delete-backward)))
+
 
 ;;;Package configuration;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
