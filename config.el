@@ -155,6 +155,13 @@
 (defalias 'eshell/o 'find-file)
 (defalias 'eshell/sp 'find-file-other-window)
 
+(defun tot/insert-filename ()
+  (interactive)
+  (counsel--find-file-1
+ "Find file: " ""
+ 'insert
+ 'test))
+
 ;;;User keybindings;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (map!
