@@ -58,7 +58,8 @@
       treemacs-position 'right
       neo-window-position 'left
       neo-window-width 30
-      neo-autorefresh t)
+      ;; neo-autorefresh t
+      )
 
 (setq +pretty-code-symbols '(:name "»"
                              :src_block "»"
@@ -146,6 +147,11 @@
   (tot/window-split-smart)
   (eshell))
 
+(defmacro tot/ivy-read-and-execute (prompt collection &rest args)
+  "Wrapper around `ivy-read', except for the COLLECTION is an alist
+where the first entry is the selection for `ivy-read' and the second
+is a form that will be evaulated if that option is selected.
+
 (defun tot/eshell-insert-at-beginning ()
   "Goes to the beginning of prompt and goes into insert mode"
   (interactive)
@@ -179,7 +185,8 @@
  "M-f" #'avy-goto-word-1
 
  (:leader
-  "b x" #'tot/kill-buffer-and-close-window)
+  "b x" #'tot/kill-buffer-and-close-window
+  "p !" #'projectile-run-async-shell-command-in-root)
 
  (:map org-agenda-mode-map
   "M-l" #'org-agenda-later
