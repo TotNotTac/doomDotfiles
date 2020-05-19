@@ -91,7 +91,7 @@
 (set-popup-rule! "\\*doom:vterm-popup.*" :side 'right :size 0.3)
 
 ;; Mysql
-(setq sql-mysql-options '("--protocol" "tcp" "-P" "3308"))
+(setq sql-mysql-options '("-s" "--protocol" "tcp" "-P" "3306"))
 
 ;;;User functions;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
