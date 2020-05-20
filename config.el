@@ -24,7 +24,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-horizon)
+(setq doom-theme 'doom-one)
 ;;*
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -147,16 +147,12 @@
   (tot/window-split-smart)
   (eshell))
 
-(defmacro tot/ivy-read-and-execute (prompt collection &rest args)
-  "Wrapper around `ivy-read', except for the COLLECTION is an alist
-where the first entry is the selection for `ivy-read' and the second
-is a form that will be evaulated if that option is selected.
-
 (defun tot/eshell-insert-at-beginning ()
-  "Goes to the beginning of prompt and goes into insert mode"
-  (interactive)
-  (eshell-bol)
-  (evil-insert-state))
+   "Goes to the beginning of prompt and goes into insert mode"
+   (interactive)
+   (when (eq major-mode 'eshell-mode)
+     (eshell-bol)
+     (evil-insert-line)))
 
 (defalias 'eshell/o 'find-file)
 (defalias 'eshell/sp 'find-file-other-window)
@@ -167,6 +163,18 @@ is a form that will be evaulated if that option is selected.
  "Find file: " ""
  'insert
  'test))
+
+(defmacro tot/ivy-read-and-execute (prompt collection &rest args)
+  "Wrapper around `ivy-read', except for the COLLECTION is an alist
+where the first entry is the selection for `ivy-read' and the second
+is a form that will be evaulated if that option is selected.
+
+E.g. (ivy-read-and-execute \"Say \" ((\"hi\" (message \"Hi\"))
+                                    (\"bye\" (message \"Bye\"))))
+If the you select `hi' then you get the message `Hi'
+"
+  `(pcase (ivy-read ,prompt ',collection ,@args)
+     ,@collection))
 
 ;;;User keybindings;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -188,6 +196,11 @@ is a form that will be evaulated if that option is selected.
   "b x" #'tot/kill-buffer-and-close-window
   "p !" #'projectile-run-async-shell-command-in-root)
 
+ (:map org-mode-map
+  :localleader
+  "s" #'org-sidebar-tree-toggle
+  "RET" #'org-sidebar-tree-jump)
+
  (:map org-agenda-mode-map
   "M-l" #'org-agenda-later
   "M-h" #'org-agenda-earlier)
@@ -207,6 +220,7 @@ is a form that will be evaulated if that option is selected.
  "M-8" 'winum-select-window-8
  "M-9" 'winum-select-window-9
  "M-0" #'tot/neotree-toggle-function
+
  (:leader ;; Backup keybindings for in terminal mode
   "1" 'winum-select-window-1
   "2" 'winum-select-window-2
@@ -262,4 +276,4 @@ is a form that will be evaulated if that option is selected.
 
 ;;;Hooks;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(add-hook 'delete-frame-hook '+workspace/kill-session)
+(add-hook 'delete-frame-hook '+workspace/delete)
