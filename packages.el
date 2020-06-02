@@ -47,3 +47,6 @@
 ;(package! builtin-package :recipe (:branch "develop"))
 (package! color-theme-sanityinc-tomorrow :recipe (:host github :repo "purcell/color-theme-sanityinc-tomorrow"))
 (package! org-sidebar :recipe (:host github :repo "alphapapa/org-sidebar"))
+(package! demo-it)
+(package! ivy-posframe :recipe (:host github :repo "tumashu/ivy-posframe"))
+(package! eaf :recipe (:host github :repo "manateelazycat/emacs-application-framework"))
