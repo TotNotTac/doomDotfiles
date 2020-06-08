@@ -188,13 +188,14 @@ If the you select `hi' then you get the message `Hi'
  "M-W" #'evil-window-delete
  "M-i" #'er/expand-region
 
+ (:leader
+  "b x" #'tot/kill-buffer-and-close-window
+  "p !" #'projectile-run-async-shell-command-in-root
+  "o c" #'cfw:open-org-calendar)
+
  :ni
 
  "M-f" #'avy-goto-word-1
-
- (:leader
-  "b x" #'tot/kill-buffer-and-close-window
-  "p !" #'projectile-run-async-shell-command-in-root)
 
  (:map org-mode-map
   :localleader
@@ -277,3 +278,4 @@ If the you select `hi' then you get the message `Hi'
 ;;;Hooks;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (add-hook 'delete-frame-hook '+workspace/delete)
+(add-hook 'emacs-startup-hook 'org-agenda-list)
