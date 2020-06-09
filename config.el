@@ -54,6 +54,7 @@
 
 ;;;User variables;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
 (setq evil-escape-key-sequence nil
       treemacs-position 'right
       neo-window-position 'left
@@ -93,6 +94,12 @@
 
 ;; Mysql
 (setq sql-mysql-options '("-s" "--protocol" "tcp" "-P" "3306"))
+
+;; Eshell
+(add-hook
+ 'eshell-mode-hook
+ (lambda ()
+   (setq pcomplete-cycle-completions nil)))
 
 ;;;User functions;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -199,7 +206,7 @@ If the you select `hi' then you get the message `Hi'
 
  (:map org-mode-map
   :localleader
-  "s" #'org-sidebar-tree-toggle
+  "S" #'org-sidebar-tree-toggle
   "RET" #'org-sidebar-tree-jump)
 
  (:map org-agenda-mode-map
@@ -249,9 +256,9 @@ If the you select `hi' then you get the message `Hi'
   "b c" #'tot/save-and-kill-buffer
   "/" #'swiper
   "?" #'+ivy/project-search
-
-  "o t" #'tot/eshell-other-window
-  "o T" #'eshell))
+  ;; "o t" #'tot/eshell-other-window
+  ;; "o T" #'eshell
+  ))
 
 (add-hook 'eshell-mode-hook
           (lambda ()
@@ -271,9 +278,9 @@ If the you select `hi' then you get the message `Hi'
 ;;;Package configuration;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; eclim
-(after! 'eclim
-  (setq eclim-executable "/home/silas/.eclipse/org.eclipse.platform_4.15.0_155965261_linux_gtk_x86_64/eclimd"
-        eclimd-autostart t))
+;; (after! 'eclim
+;;   (setq eclim-executable "/home/silas/.eclipse/org.eclipse.platform_4.15.0_155965261_linux_gtk_x86_64/eclimd"
+;;         eclimd-autostart t))
 
 ;;;Hooks;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
