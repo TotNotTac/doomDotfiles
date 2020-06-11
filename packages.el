@@ -51,3 +51,5 @@
 (package! ivy-posframe :recipe (:host github :repo "tumashu/ivy-posframe"))
 (package! eaf :recipe (:host github :repo "manateelazycat/emacs-application-framework"))
 (package! calfw :recipe (:host github :repo "kiwanami/emacs-calfw"))
+(package! w3m)
+(package! sx)
