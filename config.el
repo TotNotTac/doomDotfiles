@@ -174,6 +174,11 @@
    (tabulated-list-get-id)
    (tot/window-split-smart)))
 
+(defun tot/sx/search-stackoverflow (query)
+  (interactive "sSearch query: ")
+
+  (sx-search "stackoverflow" query))
+
 ;; EShell
 (defun tot/eshell-other-window ()
   "Open EShell in another window"
@@ -282,48 +287,49 @@ If the you select `hi' then you get the message `Hi'
  (:leader
   "b c" #'tot/save-and-kill-buffer
   "/" #'swiper
-  "?" #'+ivy/project-search)
- ;; "o t" #'tot/eshell-other-window
- ;; "o T" #'eshell
+  "?" #'+ivy/project-search
+  "s s" #'tot/sx/search-stackoverflow))
+;; "o t" #'tot/eshell-other-window
+;; "o T" #'eshell
 
- (map! :map sx-question-list-mode-map
-       :ni
-       "q" #'kill-buffer
-       "TAB" #'other-window
-       "RET" #'tot/sx/display-question)
+(map! :map sx-question-list-mode-map
+      :n
+      "RET" #'tot/sx/display-question
+      :ni
+      "TAB" #'other-window
+      "q" #'kill-current-buffer)
 
 (map! :map sx-question-mode-map
       :ni
       "q" #'kill-buffer-and-window
-      :n
       "TAB" #'other-window
       :i
       "k" #'sx-question-mode-previous-section
       "j" #'sx-question-mode-next-section)
 
- (add-hook 'eshell-mode-hook
-           (lambda ()
-             (add-to-list 'eshell-visual-commands "htop")
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (add-to-list 'eshell-visual-commands "htop")
 
-             (map! :map eshell-mode-map
-                   :n
-                   "I" #'tot/eshell-insert-at-beginning
-                   :ni
-                   "M->" #'lispy-slurp
-                   "M-<" #'lispy-barf
-                   "M-]" #'lispy-forward
-                   "M-[" #'lispy-backward
-                   "M-DEL" #'lispy-delete-backward)))
+            (map! :map eshell-mode-map
+                  :n
+                  "I" #'tot/eshell-insert-at-beginning
+                  :ni
+                  "M->" #'lispy-slurp
+                  "M-<" #'lispy-barf
+                  "M-]" #'lispy-forward
+                  "M-[" #'lispy-backward
+                  "M-DEL" #'lispy-delete-backward)))
 
 
 ;;;Package configuration;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
- ;; eclim
- ;; (after! 'eclim
- ;;   (setq eclim-executable "/home/silas/.eclipse/org.eclipse.platform_4.15.0_155965261_linux_gtk_x86_64/eclimd"
- ;;         eclimd-autostart t))
+;; eclim
+;; (after! 'eclim
+;;   (setq eclim-executable "/home/silas/.eclipse/org.eclipse.platform_4.15.0_155965261_linux_gtk_x86_64/eclimd"
+;;         eclimd-autostart t))
 
 ;;;Hooks;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
- (add-hook 'delete-frame-hook '+workspace/delete))
+(add-hook 'delete-frame-hook '+workspace/delete)
 (add-hook 'emacs-startup-hook 'org-agenda-list)
