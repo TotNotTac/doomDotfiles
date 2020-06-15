@@ -24,7 +24,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-one)
+(setq doom-theme 'doom-dracula)
 ;;*
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -53,6 +53,7 @@
 ;; they are implemented.
 
 ;;;User variables;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 (setq evil-escape-key-sequence nil
       treemacs-position 'right
@@ -93,6 +94,31 @@
 
 ;; Mysql
 (setq sql-mysql-options '("-s" "--protocol" "tcp" "-P" "3306"))
+
+;; Eshell
+(add-hook
+ 'eshell-mode-hook
+ (lambda ()
+   (setq pcomplete-cycle-completions nil)))
+
+;; Capture templates
+(after! org
+  (push '("s" "Schedule" entry (file+olp+datetree "~/org/agenda.org")
+          "* %?\nSCHEDULED %T" :time-prompt t)
+        org-capture-templates))
+
+;; w3m
+(map! :map w3m-mode-map
+      :i
+      "j" #'w3m-next-anchor
+      "k" #'w3m-previous-anchor
+      "K" #'w3m-scroll-down
+      "J" #'w3m-scroll-up
+      "/" #'evil-search-forward
+      "?" #'evil-search-backward
+      "n" #'evil-search-next
+      "N" #'evil-search-previous
+      "M-/" #'swiper)
 
 ;;;User functions;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -135,10 +161,23 @@
   (interactive)
   (if (> (window-pixel-height) (window-pixel-width))
       ;; then
-      (evil-window-split)
+      (split-window-below)
     ;; else
-    (evil-window-vsplit)
+    (split-window-right)
     ))
+
+;; SX mode
+(defun tot/sx/display-question ()
+  (interactive)
+  (delete-other-windows)
+  (sx-question-mode--display
+   (tabulated-list-get-id)
+   (tot/window-split-smart)))
+
+(defun tot/sx/search-stackoverflow (query)
+  (interactive "sSearch query: ")
+
+  (sx-search "stackoverflow" query))
 
 ;; EShell
 (defun tot/eshell-other-window ()
@@ -249,9 +288,24 @@ If the you select `hi' then you get the message `Hi'
   "b c" #'tot/save-and-kill-buffer
   "/" #'swiper
   "?" #'+ivy/project-search
+  "s s" #'tot/sx/search-stackoverflow))
+;; "o t" #'tot/eshell-other-window
+;; "o T" #'eshell
 
-  "o t" #'tot/eshell-other-window
-  "o T" #'eshell))
+(map! :map sx-question-list-mode-map
+      :n
+      "RET" #'tot/sx/display-question
+      :ni
+      "TAB" #'other-window
+      "q" #'kill-current-buffer)
+
+(map! :map sx-question-mode-map
+      :ni
+      "q" #'kill-buffer-and-window
+      "TAB" #'other-window
+      :i
+      "k" #'sx-question-mode-previous-section
+      "j" #'sx-question-mode-next-section)
 
 (add-hook 'eshell-mode-hook
           (lambda ()
@@ -271,9 +325,9 @@ If the you select `hi' then you get the message `Hi'
 ;;;Package configuration;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; eclim
-(after! 'eclim
-  (setq eclim-executable "/home/silas/.eclipse/org.eclipse.platform_4.15.0_155965261_linux_gtk_x86_64/eclimd"
-        eclimd-autostart t))
+;; (after! 'eclim
+;;   (setq eclim-executable "/home/silas/.eclipse/org.eclipse.platform_4.15.0_155965261_linux_gtk_x86_64/eclimd"
+;;         eclimd-autostart t))
 
 ;;;Hooks;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
