@@ -199,7 +199,7 @@ If the you select `hi' then you get the message `Hi'
 
  (:map org-mode-map
   :localleader
-  "s" #'org-sidebar-tree-toggle
+  "S" #'org-sidebar-tree-toggle
   "RET" #'org-sidebar-tree-jump)
 
  (:map org-agenda-mode-map
@@ -279,3 +279,12 @@ If the you select `hi' then you get the message `Hi'
 
 (add-hook 'delete-frame-hook '+workspace/delete)
 (add-hook 'emacs-startup-hook 'org-agenda-list)
+
+(remove-hook! '(org-mode-hook
+               markdown-mode-hook
+               TeX-mode-hook
+               rst-mode-hook
+               mu4e-compose-mode-hook
+               message-mode-hook
+               git-commit-mode-hook)
+             #'flyspell-mode)
