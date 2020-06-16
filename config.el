@@ -203,6 +203,22 @@
  'insert
  'test))
 
+(defun tot/make-mc-in-selection (start end)
+  (interactive "r")
+  (evil-exit-visual-state)
+  (goto-char start)
+  (let (
+        (match-pos start)
+        (match-char (byte-to-string (read-char))))
+    (ignore-errors
+      (re-search-forward match-char)
+      (while (<= (point) end)
+        (left-char)
+        (evil-mc-make-cursor-here)
+        (right-char)
+        (re-search-forward match-char))))
+  (evil-mc-undo-last-added-cursor))
+
 (defmacro tot/ivy-read-and-execute (prompt collection &rest args)
   "Wrapper around `ivy-read', except for the COLLECTION is an alist
 where the first entry is the selection for `ivy-read' and the second
@@ -288,9 +304,9 @@ If the you select `hi' then you get the message `Hi'
   "b c" #'tot/save-and-kill-buffer
   "/" #'swiper
   "?" #'+ivy/project-search
-  "s s" #'tot/sx/search-stackoverflow))
-;; "o t" #'tot/eshell-other-window
-;; "o T" #'eshell
+  "s s" #'tot/sx/search-stackoverflow)
+ :v
+ "s" #'tot/make-mc-in-selection)
 
 (map! :map sx-question-list-mode-map
       :n
