@@ -209,15 +209,15 @@
   (goto-char start)
   (let (
         (match-pos start)
-        (match-char (byte-to-string (read-char))))
+        (regex-string (read-string "regex: ")))
     (ignore-errors
-      (re-search-forward match-char)
+      (re-search-forward regex-string)
       (while (<= (point) end)
         (left-char)
         (evil-mc-make-cursor-here)
         (right-char)
-        (re-search-forward match-char))))
-  (evil-mc-undo-last-added-cursor))
+        (re-search-forward regex-string))))
+  (evil-mc-skip-and-goto-prev-cursor))
 
 (defmacro tot/ivy-read-and-execute (prompt collection &rest args)
   "Wrapper around `ivy-read', except for the COLLECTION is an alist
