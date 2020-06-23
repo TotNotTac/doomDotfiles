@@ -231,105 +231,40 @@ If the you select `hi' then you get the message `Hi'
   `(pcase (ivy-read ,prompt ',collection ,@args)
      ,@collection))
 
-(defun tot/add-digit-argument-1 (&optional arg)
-  (interactive "P")
-  (when arg
-    (mapc (lambda (x)
-            (setq unread-command-events (nconc unread-command-events (list x)))
-            )
-          (string-to-vector (number-to-string arg))
-          ))
-  (setq unread-command-events (nconc unread-command-events (list 49))))
+(defmacro tot/add-digit-argument-def (name digit)
+  `(defun ,name (&optional arg)
+    (interactive "P")
+    (when arg
+      (mapc (lambda (x)
+              (setq unread-command-events (nconc unread-command-events (list x)))
+              )
+            (string-to-vector (number-to-string arg))
+            ))
+    (setq unread-command-events (nconc unread-command-events (list ,digit))))
+  )
 
-(defun tot/add-digit-argument-2 (&optional arg)
-  (interactive "P")
-  (when arg
-    (mapc (lambda (x)
-            (setq unread-command-events (nconc unread-command-events (list x)))
-            )
-          (string-to-vector (number-to-string arg))
-          ))
-  (setq unread-command-events (nconc unread-command-events (list 50))))
 
-(defun tot/add-digit-argument-3 (&optional arg)
-  (interactive "P")
-  (when arg
-    (mapc (lambda (x)
-            (setq unread-command-events (nconc unread-command-events (list x)))
-            )
-          (string-to-vector (number-to-string arg))
-          ))
-  (setq unread-command-events (nconc unread-command-events (list 51))))
+;; (defun tot/add-digit-argument (&optional arg)
+;;   (interactive "P")
+;;   (when arg
+;;     (mapc (lambda (x)
+;;             (setq unread-command-events (nconc unread-command-events (list x)))
+;;             )
+;;           (string-to-vector (number-to-string arg))
+;;           ))
+;;   (setq unread-command-events (nconc unread-command-events (list 49))))
 
-(defun tot/add-digit-argument-4 (&optional arg)
-  (interactive "P")
-  (when arg
-    (mapc (lambda (x)
-            (setq unread-command-events (nconc unread-command-events (list x)))
-            )
-          (string-to-vector (number-to-string arg))
-          ))
-  (setq unread-command-events (nconc unread-command-events (list 52))))
-
-(defun tot/add-digit-argument-5 (&optional arg)
-  (interactive "P")
-  (when arg
-    (mapc (lambda (x)
-            (setq unread-command-events (nconc unread-command-events (list x)))
-            )
-          (string-to-vector (number-to-string arg))
-          ))
-  (setq unread-command-events (nconc unread-command-events (list 53))))
-
-(defun tot/add-digit-argument-6 (&optional arg)
-  (interactive "P")
-  (when arg
-    (mapc (lambda (x)
-            (setq unread-command-events (nconc unread-command-events (list x)))
-            )
-          (string-to-vector (number-to-string arg))
-          ))
-  (setq unread-command-events (nconc unread-command-events (list 54))))
-
-(defun tot/add-digit-argument-7 (&optional arg)
-  (interactive "P")
-  (when arg
-    (mapc (lambda (x)
-            (setq unread-command-events (nconc unread-command-events (list x)))
-            )
-          (string-to-vector (number-to-string arg))
-          ))
-  (setq unread-command-events (nconc unread-command-events (list 55))))
-
-(defun tot/add-digit-argument-8 (&optional arg)
-  (interactive "P")
-  (when arg
-    (mapc (lambda (x)
-            (setq unread-command-events (nconc unread-command-events (list x)))
-            )
-          (string-to-vector (number-to-string arg))
-          ))
-  (setq unread-command-events (nconc unread-command-events (list 56))))
-
-(defun tot/add-digit-argument-9 (&optional arg)
-  (interactive "P")
-  (when arg
-    (mapc (lambda (x)
-            (setq unread-command-events (nconc unread-command-events (list x)))
-            )
-          (string-to-vector (number-to-string arg))
-          ))
-  (setq unread-command-events (nconc unread-command-events (list 57))))
-
-(defun tot/add-digit-argument-0 (&optional arg)
-  (interactive "P")
-  (when arg
-    (mapc (lambda (x)
-            (setq unread-command-events (nconc unread-command-events (list x)))
-            )
-          (string-to-vector (number-to-string arg))
-          ))
-  (setq unread-command-events (nconc unread-command-events (list 48))))
+(progn
+  (tot/add-digit-argument-def tot/add-digit-argument-1 49)
+  (tot/add-digit-argument-def tot/add-digit-argument-2 50)
+  (tot/add-digit-argument-def tot/add-digit-argument-3 51)
+  (tot/add-digit-argument-def tot/add-digit-argument-4 51)
+  (tot/add-digit-argument-def tot/add-digit-argument-5 52)
+  (tot/add-digit-argument-def tot/add-digit-argument-6 53)
+  (tot/add-digit-argument-def tot/add-digit-argument-7 54)
+  (tot/add-digit-argument-def tot/add-digit-argument-8 55)
+  (tot/add-digit-argument-def tot/add-digit-argument-9 56)
+  (tot/add-digit-argument-def tot/add-digit-argument-0 57))
 
 ;;;User keybindings;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
