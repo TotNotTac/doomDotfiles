@@ -53,5 +53,5 @@
 (package! calfw :recipe (:host github :repo "kiwanami/emacs-calfw"))
 (package! w3m)
 (package! sx)
-(package! chronos)
 (package! elfeed)
+(package! command-log-mode)

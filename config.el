@@ -231,6 +231,106 @@ If the you select `hi' then you get the message `Hi'
   `(pcase (ivy-read ,prompt ',collection ,@args)
      ,@collection))
 
+(defun tot/add-digit-argument-1 (&optional arg)
+  (interactive "P")
+  (when arg
+    (mapc (lambda (x)
+            (setq unread-command-events (nconc unread-command-events (list x)))
+            )
+          (string-to-vector (number-to-string arg))
+          ))
+  (setq unread-command-events (nconc unread-command-events (list 49))))
+
+(defun tot/add-digit-argument-2 (&optional arg)
+  (interactive "P")
+  (when arg
+    (mapc (lambda (x)
+            (setq unread-command-events (nconc unread-command-events (list x)))
+            )
+          (string-to-vector (number-to-string arg))
+          ))
+  (setq unread-command-events (nconc unread-command-events (list 50))))
+
+(defun tot/add-digit-argument-3 (&optional arg)
+  (interactive "P")
+  (when arg
+    (mapc (lambda (x)
+            (setq unread-command-events (nconc unread-command-events (list x)))
+            )
+          (string-to-vector (number-to-string arg))
+          ))
+  (setq unread-command-events (nconc unread-command-events (list 51))))
+
+(defun tot/add-digit-argument-4 (&optional arg)
+  (interactive "P")
+  (when arg
+    (mapc (lambda (x)
+            (setq unread-command-events (nconc unread-command-events (list x)))
+            )
+          (string-to-vector (number-to-string arg))
+          ))
+  (setq unread-command-events (nconc unread-command-events (list 52))))
+
+(defun tot/add-digit-argument-5 (&optional arg)
+  (interactive "P")
+  (when arg
+    (mapc (lambda (x)
+            (setq unread-command-events (nconc unread-command-events (list x)))
+            )
+          (string-to-vector (number-to-string arg))
+          ))
+  (setq unread-command-events (nconc unread-command-events (list 53))))
+
+(defun tot/add-digit-argument-6 (&optional arg)
+  (interactive "P")
+  (when arg
+    (mapc (lambda (x)
+            (setq unread-command-events (nconc unread-command-events (list x)))
+            )
+          (string-to-vector (number-to-string arg))
+          ))
+  (setq unread-command-events (nconc unread-command-events (list 54))))
+
+(defun tot/add-digit-argument-7 (&optional arg)
+  (interactive "P")
+  (when arg
+    (mapc (lambda (x)
+            (setq unread-command-events (nconc unread-command-events (list x)))
+            )
+          (string-to-vector (number-to-string arg))
+          ))
+  (setq unread-command-events (nconc unread-command-events (list 55))))
+
+(defun tot/add-digit-argument-8 (&optional arg)
+  (interactive "P")
+  (when arg
+    (mapc (lambda (x)
+            (setq unread-command-events (nconc unread-command-events (list x)))
+            )
+          (string-to-vector (number-to-string arg))
+          ))
+  (setq unread-command-events (nconc unread-command-events (list 56))))
+
+(defun tot/add-digit-argument-9 (&optional arg)
+  (interactive "P")
+  (when arg
+    (mapc (lambda (x)
+            (setq unread-command-events (nconc unread-command-events (list x)))
+            )
+          (string-to-vector (number-to-string arg))
+          ))
+  (setq unread-command-events (nconc unread-command-events (list 57))))
+
+(defun tot/add-digit-argument-0 (&optional arg)
+  (interactive "P")
+  (when arg
+    (mapc (lambda (x)
+            (setq unread-command-events (nconc unread-command-events (list x)))
+            )
+          (string-to-vector (number-to-string arg))
+          ))
+  (setq unread-command-events (nconc unread-command-events (list 48))))
+
 ;;;User keybindings;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (map!
@@ -248,9 +348,10 @@ If the you select `hi' then you get the message `Hi'
   "p !" #'projectile-run-async-shell-command-in-root
   "o c" #'cfw:open-org-calendar)
 
+
  :ni
 
- "M-f" #'avy-goto-word-1
+ "M-F" #'avy-goto-word-1
 
  (:map org-mode-map
   :localleader
@@ -307,6 +408,30 @@ If the you select `hi' then you get the message `Hi'
   "s s" #'tot/sx/search-stackoverflow)
  :v
  "s" #'tot/make-mc-in-selection)
+
+(map!
+ :map evil-normal-state-map
+ "M-a" #'tot/add-digit-argument-1
+ "M-s" #'tot/add-digit-argument-2
+ "M-d" #'tot/add-digit-argument-3
+ "M-f" #'tot/add-digit-argument-4
+ "M-g" #'tot/add-digit-argument-5
+ "M-h" #'tot/add-digit-argument-6
+ "M-j" #'tot/add-digit-argument-7
+ "M-k" #'tot/add-digit-argument-8
+ "M-l" #'tot/add-digit-argument-9
+ "M-;" #'tot/add-digit-argument-0
+ :map evil-visual-state-map
+ "M-a" #'tot/add-digit-argument-1
+ "M-s" #'tot/add-digit-argument-2
+ "M-d" #'tot/add-digit-argument-3
+ "M-f" #'tot/add-digit-argument-4
+ "M-g" #'tot/add-digit-argument-5
+ "M-h" #'tot/add-digit-argument-6
+ "M-j" #'tot/add-digit-argument-7
+ "M-k" #'tot/add-digit-argument-8
+ "M-l" #'tot/add-digit-argument-9
+ "M-;" #'tot/add-digit-argument-0)
 
 (map! :map sx-question-list-mode-map
       :n
