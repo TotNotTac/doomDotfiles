@@ -243,6 +243,28 @@ If the you select `hi' then you get the message `Hi'
     (setq unread-command-events (nconc unread-command-events (list ,digit))))
   )
 
+(defun diff-last-two-kills (&optional diff)
+  "Diff last couple of things in the kill-ring. With prefix open ediff."
+  (interactive "P")
+  (let* ((old "/tmp/old-kill")
+         (new "/tmp/new-kill")
+         (prev-ediff-quit-hook ediff-quit-hook))
+    (cl-flet ((kill-temps
+               ()
+               (dolist (f (list old new))
+                 (kill-buffer (find-buffer-visiting f)))
+               (setq ediff-quit-hook prev-ediff-quit-hook)))
+      (with-temp-file new
+        (insert (current-kill 0 t)))
+      (with-temp-file old
+        (insert (current-kill 1 t)))
+      (if (not diff)
+          (progn
+            (add-hook 'ediff-quit-hook #'kill-temps)
+            (ediff old new))
+        (diff old new "-u" t)))))
+
+(defalias 'diff-last-two-clipboard-items 'diff-last-two-kills)
 
 ;; (defun tot/add-digit-argument (&optional arg)
 ;;   (interactive "P")
@@ -286,7 +308,7 @@ If the you select `hi' then you get the message `Hi'
 
  :ni
 
- "M-F" #'avy-goto-word-1
+ "M-f" #'avy-goto-word-1
 
  (:map org-mode-map
   :localleader
@@ -300,6 +322,17 @@ If the you select `hi' then you get the message `Hi'
  (:map yas-minor-mode-map
   :i
   "C-SPC" #'yas-expand)
+
+ (:map ranger-mode-map
+ "M-1" 'winum-select-window-1
+ "M-2" 'winum-select-window-2
+ "M-3" 'winum-select-window-3
+ "M-4" 'winum-select-window-4
+ "M-5" 'winum-select-window-5
+ "M-6" 'winum-select-window-6
+ "M-7" 'winum-select-window-7
+ "M-8" 'winum-select-window-8
+ "M-9" 'winum-select-window-9)
 
  ;; Quick window switching with Meta-0..9
  "M-1" 'winum-select-window-1
@@ -344,30 +377,6 @@ If the you select `hi' then you get the message `Hi'
  :v
  "s" #'tot/make-mc-in-selection)
 
-(map!
- :map evil-normal-state-map
- "M-a" #'tot/add-digit-argument-1
- "M-s" #'tot/add-digit-argument-2
- "M-d" #'tot/add-digit-argument-3
- "M-f" #'tot/add-digit-argument-4
- "M-g" #'tot/add-digit-argument-5
- "M-h" #'tot/add-digit-argument-6
- "M-j" #'tot/add-digit-argument-7
- "M-k" #'tot/add-digit-argument-8
- "M-l" #'tot/add-digit-argument-9
- "M-;" #'tot/add-digit-argument-0
- :map evil-visual-state-map
- "M-a" #'tot/add-digit-argument-1
- "M-s" #'tot/add-digit-argument-2
- "M-d" #'tot/add-digit-argument-3
- "M-f" #'tot/add-digit-argument-4
- "M-g" #'tot/add-digit-argument-5
- "M-h" #'tot/add-digit-argument-6
- "M-j" #'tot/add-digit-argument-7
- "M-k" #'tot/add-digit-argument-8
- "M-l" #'tot/add-digit-argument-9
- "M-;" #'tot/add-digit-argument-0)
-
 (map! :map sx-question-list-mode-map
       :n
       "RET" #'tot/sx/display-question
@@ -400,10 +409,57 @@ If the you select `hi' then you get the message `Hi'
 
 ;;;Package configuration;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; eclim
-;; (after! 'eclim
-;;   (setq eclim-executable "/home/silas/.eclipse/org.eclipse.platform_4.15.0_155965261_linux_gtk_x86_64/eclimd"
-;;         eclimd-autostart t))
+;; (use-package eaf
+;;   :load-path "/usr/share/emacs/site-lisp/eaf")
+
+(use-package spotify
+  :load-path "/home/silas/repositories/spotify.el"
+  :config
+  (load! "personal.el")
+  (define-key spotify-mode-map (kbd "C-c .") 'spotify-command-map))
+
+;; (defhydra spotify-hydra-main (:color green :hint nil)
+;;   "
+;; Current track: % -28`spotify-player-status
+
+;; ^Tracks^                       ^Playback^               ^Search
+;; ^^^^────────────────────────────────────────────
+;; _h_: previous track            _j_:   volume down       _t_: Track
+;; _l_: next track                _k_:   volume up         _p_: Playlists
+;; _a_: add track to playlist     _SPC_: toggle playback   _P_: Personal playlists
+;;  "
+;;   ("h" spotify-previous-track :exit (not hydra-prefix-arg))
+;;   ("l" spotify-next-track :exit (not hydra-prefix-arg))
+;;   ("j" spotify-volume-down)
+;;   ("k" spotify-volume-up)
+;;   ("t" spotify-track-search :exit (not hydra-prefix-arg))
+;;   ("p" spotify-playlist-search :exit t)
+;;   ("P" spotify-my-playlists :exit t)
+;;   ("a" spotify-track-add :exit t)
+;;   ("SPC" spotify-toggle-play :exit (not hydra-prefix-arg)))
+
+(defhydra spotify-hydra-main (:color green :hint nil)
+  ""
+  ("h" spotify-previous-track "Previous" :exit (not hydra-prefix-arg) :column "Tracks")
+  ("l" spotify-next-track "Next" :exit (not hydra-prefix-arg) :column "Tracks")
+  ("SPC" spotify-toggle-play "Toggle" :exit (not hydra-prefix-arg) :column "Playback")
+  ("j" spotify-volume-down "Volume down" :column "Playback")
+  ("k" spotify-volume-up "Volume up" :column "Playback")
+  ("t" spotify-track-search "Search" :exit (not hydra-prefix-arg) :column "Tracks")
+  ("p" spotify-playlist-search "Search" :exit t :column "Playlists")
+  ("P" spotify-my-playlists "My playlists" :exit t :column "Playlists")
+  ("a" spotify-track-add "Add to playlist" :exit t :column "Playlists"))
+
+
+(defun tot/display-spotify-hydra (&optional arg)
+  (interactive "P")
+  (setq hydra-prefix-arg arg)
+  (spotify-hydra-main/body))
+
+
+(map!
+ :leader "o s" 'tot/display-spotify-hydra)
+
 
 ;;;Hooks;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
