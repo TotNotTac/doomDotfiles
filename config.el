@@ -54,6 +54,7 @@
 
 ;;;User variables;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(setq calc-algebraic-mode t)
 
 (setq evil-escape-key-sequence nil
       treemacs-position 'right
@@ -74,14 +75,11 @@
                              :map "↦"
                              :null "∅"
                              :not "￢"
-                             :in "∈"
-                             :not-in "∉"
                              :and "∧"
                              :or "∨"
                              :for "∀"
                              :some "∃"
                              :tuple "⨂"
-                             :pipe ""
                              :dot "•"))
 
 ;; Switch to the new window after splitting
@@ -163,8 +161,7 @@
       ;; then
       (split-window-below)
     ;; else
-    (split-window-right)
-    ))
+    (+evil-window-vsplit-a)))
 
 ;; SX mode
 (defun tot/sx/display-question ()
@@ -409,8 +406,8 @@ If the you select `hi' then you get the message `Hi'
 
 ;;;Package configuration;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; (use-package eaf
-;;   :load-path "/usr/share/emacs/site-lisp/eaf")
+(use-package eaf
+  :load-path "/home/silas/repositories/emacs-application-framework")
 
 (use-package spotify
   :load-path "/home/silas/repositories/spotify.el"
@@ -450,16 +447,55 @@ If the you select `hi' then you get the message `Hi'
   ("P" spotify-my-playlists "My playlists" :exit t :column "Playlists")
   ("a" spotify-track-add "Add to playlist" :exit t :column "Playlists"))
 
-
 (defun tot/display-spotify-hydra (&optional arg)
   (interactive "P")
   (setq hydra-prefix-arg arg)
   (spotify-hydra-main/body))
 
-
 (map!
  :leader "o s" 'tot/display-spotify-hydra)
 
+(defhydra windows-hydra (:hint nil) ""
+  ("s" split-window-right "Horizontal" :column "Splits")
+  ("v" split-window-below "Vertical" :column "Splits")
+  ("c" +workspace/close-window-or-workspace "Close")
+  ("h" windmove-left "Left" :column "Switch window")
+  ("l" windmove-right "Right" :column "Switch window")
+  ("k" windmove-up "Up" :column "Switch window")
+  ("j" windmove-down "Down" :column "Switch window")
+  ("H" hydra-move-splitter-left "Left" :column "Resize")
+  ("L" hydra-move-splitter-right "Up" :column "Resize")
+  ("J" hydra-move-splitter-down "Down" :column "Resize")
+  ("K" hydra-move-splitter-up "Up" :column "Resize")
+  ("|" evil-window-set-width "Set width" :column "Resize")
+  ("-" evil-window-set-width "Set height" :column "Resize")
+  ("=" balance-windows "Balance" :column "Resize")
+  ("p" previous-buffer "Previous" :column "Buffer")
+  ("n" next-buffer "Next" :column "Buffer")
+  ("b" ivy-switch-buffer "switch-buffer" :column "Buffer")
+  ("f" find-file "find-file" :column "Buffer")
+  ("K" kill-current-buffer "Kill" :column "Buffer")
+  ("m" ace-swap-window "Swap buffers" :column "Buffer")
+  ("M-h" evil-scroll-column-left "Left" :column "Adjustment")
+  ("M-j" evil-scroll-line-down "Down" :column "Adjustment")
+  ("M-k" evil-scroll-line-up "Up" :column "Adjustment")
+  ("M-l" evil-scroll-column-right "Right" :column "Adjustment"))
+
+(map! :leader "w ." 'windows-hydra/body)
+
+(defun ytel-watch ()
+  "Stream video at point in mpv."
+  (interactive)
+  (let* ((video (ytel-get-current-video))
+         (id    (ytel-video-id video)))
+    (start-process "ytel mpv" nil
+                   "mpv"
+                   (concat "https://www.youtube.com/watch?v=" id))
+    "--ytdl-format=bestvideo[height<=?720]+bestaudio/best")
+  (message "Starting streaming..."))
+
+(map! :map ytel-mode-map :ni
+      "RET" #'ytel-watch)
 
 ;;;Hooks;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -474,3 +510,19 @@ If the you select `hi' then you get the message `Hi'
                message-mode-hook
                git-commit-mode-hook)
              #'flyspell-mode)
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(safe-local-variable-values (quote ((projectile-project-run-cmd . "python3 main.py"))))
+ '(send-mail-function (quote mailclient-send-it)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ediff-fine-diff-A ((t (:background "lime green" :weight bold))))
+ '(ediff-fine-diff-B ((t (:background "red" :weight bold)))))
+

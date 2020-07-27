@@ -55,3 +55,5 @@
 (package! sx)
 (package! elfeed)
 (package! command-log-mode)
+(package! ytel)
+(package! impatient-mode)
