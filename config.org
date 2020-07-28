@@ -8,10 +8,21 @@
 * Doom related
 #+begin_src emacs-lisp
 (setq doom-font (font-spec :family "monospace" :size 14))
-(setq doom-theme 'doom-dracula)
+(setq doom-theme 'doom-vibrant)
 (setq org-directory "~/org/")
 (setq display-line-numbers-type 'relative)
+
+(setq doom-fallback-buffer-name "► Doom"
+      +doom-dashboard-name "► Doom")
+(setq doom-theme 'doom-vibrant)
 #+end_src
+
+* Package loading
+Get your emacs themes on the terminal
+#+begin_src emacs-lisp
+;; (package! theme-magic)
+#+end_src
+
 * Personal
 ** Variables
 #+begin_src emacs-lisp
@@ -167,7 +178,7 @@ If the you select `hi' then you get the message `Hi'
   (tot/add-digit-argument-def tot/add-digit-argument-0 57))
 #+end_src
 
-* Keyma
+* Keymap
 #+begin_src emacs-lisp
 (map!
  :nvime
@@ -310,6 +321,7 @@ Windows hydra
 ** Pretty symbols
 #+begin_src emacs-lisp
 (when (featurep! :ui pretty-code)
+  (setq +pretty-(when (featurep! :ui pretty-code)
   (setq +pretty-code-symbols '(:name "»"
                                :src_block "»"
                                :src_block_end "«"
@@ -327,8 +339,22 @@ Windows hydra
                                :for "∀"
                                :some "∃"
                                :tuple "⨂"
-                               :dot "•")))
+                               :dot "•"
+                               :begin_quote   "❮"
+                               :end_quote     "❯"
+                               :begin_export  "⯮"
+                               :end_export    "⯬"
+                               :priority_a   "⬆"
+                               :priority_b   "■"
+                               :priority_c   "⬇"
+                               :em_dash       "—"
+                               :property      "☸"
+                               :properties    "⚙"
+                               :checkbox      "☐"
+                               :checkedbox    "☑"
+                               )))
 #+end_src
+
 ** Eshell
 #+begin_src emacs-lisp
 (when (featurep! :term eshell)
@@ -470,6 +496,24 @@ Add a nice spotify Hydra
 (map! :map ytel-mode-map :ni
       "RET" #'ytel-watch
       )
+#+end_src
+
+** Org
+
+*** Capture
+**** Create capture frame
+Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. Curse you synchronous programming!
+#+begin_src emacs-lisp
+(defun tot/display-capture-frame ()
+  (set-frame-size (selected-frame) 80 20)
+  (org-capture)
+  (delete-other-windows))
+#+end_src
+
+**** Templates
+** theme-magic
+#+begin_src emacs-lisp
+(add-hook 'doom-load-theme-hook 'theme-magic-from-emacs)
 #+end_src
 * Hooks
 #+begin_src emacs-lisp
