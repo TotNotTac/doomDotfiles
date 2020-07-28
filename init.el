@@ -178,5 +178,7 @@
        ;;twitter           ; twitter client https://twitter.com/vnought
 
        :config
-       ;;literate
+       literate
        (default +bindings +smartparens))
+
+(setq +literate-config-file (concat doom-private-dir "config.org"))

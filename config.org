@@ -1,0 +1,488 @@
+#+TITLE: Config
+
+* User information
+#+begin_src emacs-lisp
+(setq user-full-name "Silas de Jong"
+      user-mail-address "silas.de.jong@hva.nl")
+#+end_src
+* Doom related
+#+begin_src emacs-lisp
+(setq doom-font (font-spec :family "monospace" :size 14))
+(setq doom-theme 'doom-dracula)
+(setq org-directory "~/org/")
+(setq display-line-numbers-type 'relative)
+#+end_src
+* Personal
+** Variables
+#+begin_src emacs-lisp
+(setq evil-escape-key-sequence nil
+      treemacs-position 'right
+      neo-window-position 'left
+      neo-window-width 30)
+#+end_src
+
+Switch to the new window after splitting
+#+begin_src emacs-lisp
+(setq evil-split-window-below nil
+      evil-vsplit-window-right t)
+#+end_src
+
+Set popup rules
+#+begin_src emacs-lisp
+(set-popup-rule! "\\*doom:vterm-popup.*" :side 'right :size 0.3)
+#+end_src
+
+Sql settings
+#+begin_src emacs-lisp
+(setq sql-mysql-options '("-s" "--protocol" "tcp" "-P" "3306"))
+(add-hook 'sql-interactive-mode-hook 'yas-minor-mode-on)
+#+end_src
+** Functions
+#+begin_src emacs-lisp
+(defun tot/save-and-kill-buffer ()
+  "Save a buffer before killing"
+  (interactive)
+  (unless (string-match-p ".*\\*.*\\*.*" (buffer-name))
+    (save-buffer))
+  (kill-buffer))
+
+(defun tot/kill-buffer-and-close-window ()
+  "Kill and save buffer, then close the window"
+  (interactive)
+  (tot/save-and-kill-buffer)
+  (delete-window))
+
+(defun tot/window-split-smart ()
+  "Splits window into two. It'll split so the difference between the height and the width of a window is as small as possible"
+  (interactive)
+  (if (> (window-pixel-height) (window-pixel-width))
+      ;; then
+      (split-window-below)
+    ;; else
+    (+evil-window-vsplit-a)))
+
+;; SX mode
+(defun tot/sx/display-question ()
+  (interactive)
+  (delete-other-windows)
+  (sx-question-mode--display
+   (tabulated-list-get-id)
+   (tot/window-split-smart)))
+
+(defun tot/sx/search-stackoverflow (query)
+  (interactive "sSearch query: ")
+
+  (sx-search "stackoverflow" query))
+
+(defun tot/insert-filename ()
+  (interactive)
+  (counsel--find-file-1
+ "Find file: " ""
+ 'insert
+ 'test))
+
+(when (featurep! :editor multiple-cursors)
+    (defun tot/make-mc-in-selection (start end)
+    (interactive "r")
+    (evil-exit-visual-state)
+    (goto-char start)
+    (let (
+            (match-pos start)
+            (regex-string (read-string "regex: ")))
+        (ignore-errors
+        (re-search-forward regex-string)
+        (while (<= (point) end)
+            (left-char)
+            (evil-mc-make-cursor-here)
+            (right-char)
+            (re-search-forward regex-string))))
+    (evil-mc-skip-and-goto-prev-cursor)))
+
+(defmacro tot/ivy-read-and-execute (prompt collection &rest args)
+  "Wrapper around `ivy-read', except for the COLLECTION is an alist
+where the first entry is the selection for `ivy-read' and the second
+is a form that will be evaulated if that option is selected.
+
+E.g. (ivy-read-and-execute \"Say \" ((\"hi\" (message \"Hi\"))
+                                    (\"bye\" (message \"Bye\"))))
+If the you select `hi' then you get the message `Hi'
+"
+  `(pcase (ivy-read ,prompt ',collection ,@args)
+     ,@collection))
+
+(defmacro tot/add-digit-argument-def (name digit)
+  `(defun ,name (&optional arg)
+    (interactive "P")
+    (when arg
+      (mapc (lambda (x)
+              (setq unread-command-events (nconc unread-command-events (list x)))
+              )
+            (string-to-vector (number-to-string arg))
+            ))
+    (setq unread-command-events (nconc unread-command-events (list ,digit)))))
+
+(defun diff-last-two-kills (&optional diff)
+  "Diff last couple of things in the kill-ring. With prefix open ediff."
+  (interactive "P")
+  (let* ((old "/tmp/old-kill")
+         (new "/tmp/new-kill")
+         (prev-ediff-quit-hook ediff-quit-hook))
+    (cl-flet ((kill-temps
+               ()
+               (dolist (f (list old new))
+                 (kill-buffer (find-buffer-visiting f)))
+               (setq ediff-quit-hook prev-ediff-quit-hook)))
+      (with-temp-file new
+        (insert (current-kill 0 t)))
+      (with-temp-file old
+        (insert (current-kill 1 t)))
+      (if (not diff)
+          (progn
+            (add-hook 'ediff-quit-hook #'kill-temps)
+            (ediff old new))
+        (diff old new "-u" t)))))
+
+(defalias 'diff-last-two-clipboard-items 'diff-last-two-kills)
+
+(defun tot/add-digit-argument (&optional arg)
+  (interactive "P")
+  (when arg
+    (mapc (lambda (x)
+            (setq unread-command-events (nconc unread-command-events (list x)))
+            )
+          (string-to-vector (number-to-string arg))
+          ))
+  (setq unread-command-events (nconc unread-command-events (list 49))))
+
+(progn
+  (tot/add-digit-argument-def tot/add-digit-argument-1 49)
+  (tot/add-digit-argument-def tot/add-digit-argument-2 50)
+  (tot/add-digit-argument-def tot/add-digit-argument-3 51)
+  (tot/add-digit-argument-def tot/add-digit-argument-4 51)
+  (tot/add-digit-argument-def tot/add-digit-argument-5 52)
+  (tot/add-digit-argument-def tot/add-digit-argument-6 53)
+  (tot/add-digit-argument-def tot/add-digit-argument-7 54)
+  (tot/add-digit-argument-def tot/add-digit-argument-8 55)
+  (tot/add-digit-argument-def tot/add-digit-argument-9 56)
+  (tot/add-digit-argument-def tot/add-digit-argument-0 57))
+#+end_src
+
+* Keyma
+#+begin_src emacs-lisp
+(map!
+ :nvime
+ "M-n" #'evil-buffer-new
+ "M-w" #'tot/save-and-kill-buffer
+ "C-M-n" #'+workspace/new
+ "C-M-w" #'+workspace/delete
+ "M-N" #'tot/window-split-smart
+ "M-W" #'evil-window-delete
+ "M-i" #'er/expand-region
+
+ (:leader
+  "b x" #'tot/kill-buffer-and-close-window
+  "p !" #'projectile-run-async-shell-command-in-root
+  "o c" #'cfw:open-org-calendar)
+
+ :ni
+ "M-f" #'avy-goto-word-1
+
+ (:map org-mode-map
+  :localleader
+  "S" #'org-sidebar-tree-toggle
+  "RET" #'org-sidebar-tree-jump)
+
+ (:map org-agenda-mode-map
+  "M-l" #'org-agenda-later
+  "M-h" #'org-agenda-earlier)
+
+ (:map yas-minor-mode-map
+  :i
+  "C-SPC" #'yas-expand)
+
+ (:map ranger-mode-map
+  "M-1" 'winum-select-window-1
+  "M-2" 'winum-select-window-2
+  "M-3" 'winum-select-window-3
+  "M-4" 'winum-select-window-4
+  "M-5" 'winum-select-window-5
+  "M-6" 'winum-select-window-6
+  "M-7" 'winum-select-window-7
+  "M-8" 'winum-select-window-8
+  "M-9" 'winum-select-window-9)
+
+ ;; Quick window switching with Meta-0..9
+ "M-1" 'winum-select-window-1
+ "M-2" 'winum-select-window-2
+ "M-3" 'winum-select-window-3
+ "M-4" 'winum-select-window-4
+ "M-5" 'winum-select-window-5
+ "M-6" 'winum-select-window-6
+ "M-7" 'winum-select-window-7
+ "M-8" 'winum-select-window-8
+ "M-9" 'winum-select-window-9
+ "M-0" #'tot/neotree-toggle-function
+
+ (:leader ;; Backup keybindings for in terminal mode
+  "1" 'winum-select-window-1
+  "2" 'winum-select-window-2
+  "3" 'winum-select-window-3
+  "4" 'winum-select-window-4
+  "5" 'winum-select-window-5
+  "6" 'winum-select-window-6
+  "7" 'winum-select-window-7
+  "8" 'winum-select-window-8
+  "9" 'winum-select-window-9)
+
+ ;; Quick workspace switch with Shift+Meta-0..9
+ "C-M-1" '+workspace/switch-to-0
+ "C-M-2" '+workspace/switch-to-1
+ "C-M-3" '+workspace/switch-to-2
+ "C-M-4" '+workspace/switch-to-3
+ "C-M-5" '+workspace/switch-to-4
+ "C-M-6" '+workspace/switch-to-5
+ "C-M-7" '+workspace/switch-to-6
+ "C-M-8" '+workspace/switch-to-7
+ "C-M-9" '+workspace/switch-to-8
+ "C-M-0" '+workspace/switch-to-9
+
+ (:leader
+  "b c" #'tot/save-and-kill-buffer
+  "/" #'swiper
+  "?" #'+ivy/project-search
+  "s s" #'tot/sx/search-stackoverflow)
+
+ :v
+ "s" #'tot/make-mc-in-selection)
+
+(map! :map sx-question-list-mode-map
+      :n
+      "RET" #'tot/sx/display-question
+      :ni
+      "TAB" #'other-window
+      "q" #'kill-current-buffer)
+
+(map! :map sx-question-mode-map
+      :ni
+      "q" #'kill-buffer-and-window
+      "TAB" #'other-window
+      :i
+      "k" #'sx-question-mode-previous-section
+      "j" #'sx-question-mode-next-section)
+#+end_src
+
+Windows hydra
+#+begin_src emacs-lisp
+(defhydra windows-hydra (:hint nil) ""
+  ("s" split-window-right "Horizontal" :column "Splits")
+  ("v" split-window-below "Vertical" :column "Splits")
+  ("c" +workspace/close-window-or-workspace "Close")
+  ("h" windmove-left "Left" :column "Switch window")
+  ("l" windmove-right "Right" :column "Switch window")
+  ("k" windmove-up "Up" :column "Switch window")
+  ("j" windmove-down "Down" :column "Switch window")
+  ("H" hydra-move-splitter-left "Left" :column "Resize")
+  ("L" hydra-move-splitter-right "Up" :column "Resize")
+  ("J" hydra-move-splitter-down "Down" :column "Resize")
+  ("K" hydra-move-splitter-up "Up" :column "Resize")
+  ("|" evil-window-set-width "Set width" :column "Resize")
+  ("-" evil-window-set-width "Set height" :column "Resize")
+  ("=" balance-windows "Balance" :column "Resize")
+  ("p" previous-buffer "Previous" :column "Buffer")
+  ("n" next-buffer "Next" :column "Buffer")
+  ("b" ivy-switch-buffer "switch-buffer" :column "Buffer")
+  ("f" find-file "find-file" :column "Buffer")
+  ("K" kill-current-buffer "Kill" :column "Buffer")
+  ("m" ace-swap-window "Swap buffers" :column "Buffer")
+  ("M-h" evil-scroll-column-left "Left" :column "Adjustment")
+  ("M-j" evil-scroll-line-down "Down" :column "Adjustment")
+  ("M-k" evil-scroll-line-up "Up" :column "Adjustment")
+  ("M-l" evil-scroll-column-right "Right" :column "Adjustment"))
+
+(map! :leader "w ." 'windows-hydra/body)
+#+end_src
+
+* Packages
+** Calc
+#+begin_src emacs-lisp
+(setq calc-algebraic-mode t)
+#+end_src
+** Pretty symbols
+#+begin_src emacs-lisp
+(when (featurep! :ui pretty-code)
+  (setq +pretty-code-symbols '(:name "»"
+                               :src_block "»"
+                               :src_block_end "«"
+                               :quote "“"
+                               :quote_end "”"
+                               :lambda "λ"
+                               :def "ƒ"
+                               :defun "ƒ"
+                               :composition "∘"
+                               :map "↦"
+                               :null "∅"
+                               :not "￢"
+                               :and "∧"
+                               :or "∨"
+                               :for "∀"
+                               :some "∃"
+                               :tuple "⨂"
+                               :dot "•")))
+#+end_src
+** Eshell
+#+begin_src emacs-lisp
+(when (featurep! :term eshell)
+  (add-hook
+   'eshell-mode-hook
+   (lambda ()
+     (setq pcomplete-cycle-completions nil))))
+
+(defun tot/eshell-other-window ()
+  "Open EShell in another window"
+  (interactive)
+  (tot/window-split-smart)
+  (eshell))
+
+(defun tot/eshell-insert-at-beginning ()
+   "Goes to the beginning of prompt and goes into insert mode"
+   (interactive)
+   (when (eq major-mode 'eshell-mode)
+     (eshell-bol)
+     (evil-insert-line)))
+
+(defalias 'eshell/o 'find-file)
+(defalias 'eshell/sp 'find-file-other-window)
+#+end_src
+** Org
+Capture templates
+#+begin_src emacs-lisp
+(when (featurep! :lang org))
+    (after! org
+    (push '("s" "Schedule" entry (file+olp+datetree "~/org/agenda.org")
+            "* %?\nSCHEDULED %T" :time-prompt t)
+            org-capture-templates))
+#+end_src
+** W3M
+#+begin_src emacs-lisp
+(map! :map w3m-mode-map
+      :i
+      "j" #'w3m-next-anchor
+      "k" #'w3m-previous-anchor
+      "K" #'w3m-scroll-down
+      "J" #'w3m-scroll-up
+      "/" #'evil-search-forward
+      "?" #'evil-search-backward
+      "n" #'evil-search-next
+      "N" #'evil-search-previous
+      "M-/" #'swiper)
+#+end_src
+** Neotree
+#+begin_src emacs-lisp
+(when (featurep! :ui neotree)
+    (defun winum-assign-0-to-neotree ()
+    (when (string-match-p ".*NeoTree.*" (buffer-name)) 0))
+
+
+    (defun tot/neotree-toggle-function ()
+    (interactive)
+    (if (neo-global--window-exists-p)
+        (if (string-match-p ".\\*NeoTree\\*.*" (buffer-name))
+            (neotree-hide)
+            ;; else
+            (winum-select-window-0))
+        ;; else
+        (+neotree/open)
+        ))
+
+    (setq winum-assign-functions '(winum-assign-0-to-neotree))
+    (setq winum-auto-assign-0-to-minibuffer nil))
+#+end_src
+** Emacs Application Framework
+#+begin_src emacs-lisp
+(use-package eaf
+  :load-path "/home/silas/repositories/emacs-application-framework")
+#+end_src
+** Spotify
+#+begin_src emacs-lisp
+(use-package spotify
+  :load-path "/home/silas/repositories/spotify.el"
+  :config
+  (load! "personal.el")
+  (define-key spotify-mode-map (kbd "C-c .") 'spotify-command-map))
+#+end_src
+
+Add a nice spotify Hydra
+#+begin_src emacs-lisp
+(when (featurep! :ui hydra)
+  ;; (defhydra spotify-hydra-main (:color green :hint nil)
+  ;;   "
+  ;; Current track: % -28`spotify-player-status
+
+  ;; ^Tracks^                       ^Playback^               ^Search
+  ;; ^^^^────────────────────────────────────────────
+  ;; _h_: previous track            _j_:   volume down       _t_: Track
+  ;; _l_: next track                _k_:   volume up         _p_: Playlists
+  ;; _a_: add track to playlist     _SPC_: toggle playback   _P_: Personal playlists
+  ;;  "
+  ;;   ("h" spotify-previous-track :exit (not hydra-prefix-arg))
+  ;;   ("l" spotify-next-track :exit (not hydra-prefix-arg))
+  ;;   ("j" spotify-volume-down)
+  ;;   ("k" spotify-volume-up)
+  ;;   ("t" spotify-track-search :exit (not hydra-prefix-arg))
+  ;;   ("p" spotify-playlist-search :exit t)
+  ;;   ("P" spotify-my-playlists :exit t)
+  ;;   ("a" spotify-track-add :exit t)
+  ;;   ("SPC" spotify-toggle-play :exit (not hydra-prefix-arg)))
+
+  (defhydra spotify-hydra-main (:color green :hint nil)
+    ""
+    ("h" spotify-previous-track "Previous" :exit (not hydra-prefix-arg) :column "Tracks")
+    ("l" spotify-next-track "Next" :exit (not hydra-prefix-arg) :column "Tracks")
+    ("SPC" spotify-toggle-play "Toggle" :exit (not hydra-prefix-arg) :column "Playback")
+    ("j" spotify-volume-down "Volume down" :column "Playback")
+    ("k" spotify-volume-up "Volume up" :column "Playback")
+    ("t" spotify-track-search "Search" :exit (not hydra-prefix-arg) :column "Tracks")
+    ("p" spotify-playlist-search "Search" :exit t :column "Playlists")
+    ("P" spotify-my-playlists "My playlists" :exit t :column "Playlists")
+    ("a" spotify-track-add "Add to playlist" :exit t :column "Playlists"))
+
+  (defun tot/display-spotify-hydra (&optional arg)
+    (interactive "P")
+    (setq hydra-prefix-arg arg)
+    (spotify-hydra-main/body))
+
+  (map!
+   :leader "o s" 'tot/display-spotify-hydra))
+#+end_src
+** Ytel
+#+begin_src emacs-lisp
+(defun ytel-watch ()
+  "Stream video at point in mpv."
+  (interactive)
+  (let* ((video (ytel-get-current-video))
+         (id    (ytel-video-id video)))
+    (start-process "ytel mpv" nil
+                   "mpv"
+                   (concat "https://www.youtube.com/watch?v=" id))
+    "--ytdl-format=bestvideo[height<=?720]+bestaudio/best")
+  (message "Starting streaming..."))
+
+(map! :map ytel-mode-map :ni
+      "RET" #'ytel-watch
+      )
+#+end_src
+* Hooks
+#+begin_src emacs-lisp
+(add-hook 'delete-frame-hook '+workspace/delete)
+(add-hook 'emacs-startup-hook 'org-agenda-list)
+
+(remove-hook! '(org-mode-hook
+               markdown-mode-hook
+               TeX-mode-hook
+               rst-mode-hook
+               mu4e-compose-mode-hook
+               message-mode-hook
+               git-commit-mode-hook)
+             #'flyspell-mode
+             )
+#+end_src
