@@ -511,6 +511,19 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
 #+end_src
 
 **** Templates
+#+begin_src emacs-lisp
+(setq org-capture-templates
+      (doct '(("Todo" :keys t
+               :file "~/org/todo.org"
+               :template ("* TODO %^{Description} :%{tag}:"
+                          "%?")
+               :children (
+                          ("School" :keys "s"
+                           :tag "school")
+                          ("Personal" :keys "p"
+                           :tag "personal")
+                          )))))
+#+end_src
 ** theme-magic
 #+begin_src emacs-lisp
 (add-hook 'doom-load-theme-hook 'theme-magic-from-emacs)
