@@ -181,6 +181,8 @@ If the you select `hi' then you get the message `Hi'
 * Keymap
 #+begin_src emacs-lisp
 (map!
+ :v "V" 'er/contract-region
+ :v "v" 'er/expand-region
  :nvime
  "M-n" #'evil-buffer-new
  "M-w" #'tot/save-and-kill-buffer
@@ -321,7 +323,6 @@ Windows hydra
 ** Pretty symbols
 #+begin_src emacs-lisp
 (when (featurep! :ui pretty-code)
-  (setq +pretty-(when (featurep! :ui pretty-code)
   (setq +pretty-code-symbols '(:name "»"
                                :src_block "»"
                                :src_block_end "«"
@@ -513,20 +514,52 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
 **** Templates
 #+begin_src emacs-lisp
 (setq org-capture-templates
-      (doct '(("Todo" :keys t
+      (doct '(("Todo" :keys "t"
                :file "~/org/todo.org"
+               :prepend t
+               :headline "Inbox"
                :template ("* TODO %^{Description} :%{tag}:"
                           "%?")
-               :children (
-                          ("School" :keys "s"
+               :children (("School" :keys "s"
                            :tag "school")
                           ("Personal" :keys "p"
-                           :tag "personal")
-                          )))))
+                           :tag "personal"))))))
 #+end_src
 ** theme-magic
 #+begin_src emacs-lisp
 (add-hook 'doom-load-theme-hook 'theme-magic-from-emacs)
+#+end_src
+** Mu4e
+#+begin_src emacs-lisp
+;; (when (file-readable-p "~/.emacs.d/email.org")
+;;     (org-babel-load-file (expand-file-name "~/.emacs.d/email.org")))
+#+end_src
+
+Turn on queueing mode
+#+begin_src emacs-lisp
+;; (after! 'mu4e
+;; (setq smtpmail-queue-mail t
+;;       smtpmail-queue-dir   "~/Maildir/queue/cur"))
+#+end_src
+
+** Notmuch
+#+begin_src emacs-lisp
+(setq +notmuch-sync-backend 'offlineimap)
+#+end_src
+
+** EAF
+- Browser
+#+begin_src emacs-lisp
+(add-hook 'eaf-mode-hook
+          (lambda ()
+            (setq eaf-mode-map (make-sparse-keymap))
+            (map! :map eaf-mode-map
+                  :n "j" 'eaf-proxy-scroll_up
+                  :n "k" 'eaf-proxy-scroll_down
+                  :n "d" 'eaf-proxy-scroll_up_page
+                  :n "u" 'eaf-proxy-scroll_down_page
+                  :n "i" 'evil-insert-state
+                  :n "i" 'eaf-proxy-insert_or_focus_input)))
 #+end_src
 * Hooks
 #+begin_src emacs-lisp
