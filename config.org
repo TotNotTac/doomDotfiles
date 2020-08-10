@@ -197,9 +197,6 @@ If the you select `hi' then you get the message `Hi'
   "p !" #'projectile-run-async-shell-command-in-root
   "o c" #'cfw:open-org-calendar)
 
- :ni
- "M-f" #'avy-goto-word-1
-
  (:map org-mode-map
   :localleader
   "S" #'org-sidebar-tree-toggle
@@ -560,6 +557,26 @@ Turn on queueing mode
                   :n "u" 'eaf-proxy-scroll_down_page
                   :n "i" 'evil-insert-state
                   :n "i" 'eaf-proxy-insert_or_focus_input)))
+#+end_src
+
+** Avy
+#+begin_src emacs-lisp
+(map! :n "M-f" 'tot/avy-goto-char-timer)
+(setq avy-timeout-seconds 0.35)
+
+(defun tot/avy-goto-char-timer (&optional arg)
+  "Read one or many consecutive chars and jump to the first one.
+The window scope is determined by `avy-all-windows' (ARG negates it)."
+  (interactive "P")
+  (let ((avy-all-windows (if arg
+                             (not avy-all-windows)
+                           avy-all-windows)))
+    (avy-with avy-goto-char-timer
+      (setq avy--old-cands (avy--read-candidates))
+      (if (> (length avy--old-cands) 1)
+          (avy-process avy--old-cands)
+        (goto-char (car (car (car avy--old-cands)))))
+      (length avy--old-cands))))
 #+end_src
 * Hooks
 #+begin_src emacs-lisp
