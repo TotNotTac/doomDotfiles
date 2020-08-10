@@ -382,6 +382,8 @@ Capture templates
 #+begin_src emacs-lisp
 (when (featurep! :lang org))
     (after! org
+      (map! :map org-mode-map
+            :localleader "C-e" 'org-edit-src-code)
     (push '("s" "Schedule" entry (file+olp+datetree "~/org/agenda.org")
             "* %?\nSCHEDULED %T" :time-prompt t)
             org-capture-templates))
