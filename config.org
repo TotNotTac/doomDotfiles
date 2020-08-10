@@ -313,9 +313,14 @@ Windows hydra
 #+end_src
 
 * Packages
-** Calc
+** Ivy-posframe
 #+begin_src emacs-lisp
-(setq calc-algebraic-mode t)
+(ivy-posframe-enable)
+
+(setq
+ ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center))
+ ivy-posframe-height 30
+ ivy-posframe-width 110)
 #+end_src
 ** Pretty symbols
 #+begin_src emacs-lisp
@@ -353,6 +358,10 @@ Windows hydra
                                )))
 #+end_src
 
+** Calc
+#+begin_src emacs-lisp
+(setq calc-algebraic-mode t)
+#+end_src
 ** Eshell
 #+begin_src emacs-lisp
 (when (featurep! :term eshell)
@@ -378,15 +387,36 @@ Windows hydra
 (defalias 'eshell/sp 'find-file-other-window)
 #+end_src
 ** Org
-Capture templates
+
 #+begin_src emacs-lisp
-(when (featurep! :lang org))
-    (after! org
-      (map! :map org-mode-map
-            :localleader "C-e" 'org-edit-src-code)
-    (push '("s" "Schedule" entry (file+olp+datetree "~/org/agenda.org")
-            "* %?\nSCHEDULED %T" :time-prompt t)
-            org-capture-templates))
+(when (featurep! :lang org)
+  (after! org
+    (map! :map org-mode-map
+          :localleader "C-e" 'org-edit-src-code)))
+#+end_src
+*** Capture
+**** Create capture frame
+Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. Curse you synchronous programming!
+#+begin_src emacs-lisp
+(defun tot/display-capture-frame ()
+  (set-frame-size (selected-frame) 80 20)
+  (org-capture)
+  (delete-other-windows))
+#+end_src
+
+**** Templates
+#+begin_src emacs-lisp
+(setq org-capture-templates
+      (doct '(("Todo" :keys "t"
+               :file "~/org/todo.org"
+               :prepend t
+               :headline "Inbox"
+               :template ("* TODO %^{Description} :%{tag}:"
+                          "%?")
+               :children (("School" :keys "s"
+                           :tag "school")
+                          ("Personal" :keys "p"
+                           :tag "personal"))))))
 #+end_src
 ** W3M
 #+begin_src emacs-lisp
@@ -498,32 +528,6 @@ Add a nice spotify Hydra
       )
 #+end_src
 
-** Org
-
-*** Capture
-**** Create capture frame
-Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. Curse you synchronous programming!
-#+begin_src emacs-lisp
-(defun tot/display-capture-frame ()
-  (set-frame-size (selected-frame) 80 20)
-  (org-capture)
-  (delete-other-windows))
-#+end_src
-
-**** Templates
-#+begin_src emacs-lisp
-(setq org-capture-templates
-      (doct '(("Todo" :keys "t"
-               :file "~/org/todo.org"
-               :prepend t
-               :headline "Inbox"
-               :template ("* TODO %^{Description} :%{tag}:"
-                          "%?")
-               :children (("School" :keys "s"
-                           :tag "school")
-                          ("Personal" :keys "p"
-                           :tag "personal"))))))
-#+end_src
 ** theme-magic
 #+begin_src emacs-lisp
 (add-hook 'doom-load-theme-hook 'theme-magic-from-emacs)
@@ -580,6 +584,7 @@ The window scope is determined by `avy-all-windows' (ARG negates it)."
         (goto-char (car (car (car avy--old-cands)))))
       (length avy--old-cands))))
 #+end_src
+
 * Hooks
 #+begin_src emacs-lisp
 (add-hook 'delete-frame-hook '+workspace/delete)
