@@ -600,6 +600,53 @@ The window scope is determined by `avy-all-windows' (ARG negates it)."
       (length avy--old-cands))))
 #+end_src
 
+** Elfeed
+#+begin_src emacs-lisp
+(map! :after elfeed
+      :g
+      :desc "Open Elfeed" :leader "o F" 'elfeed)
+#+end_src
+
+** Company
+#+begin_src emacs-lisp
+(add-hook 'company-mode-hook 'company-statistics-mode)
+#+end_src
+** Java
+#+begin_src emacs-lisp
+(after! 'meghanda
+  (map! :map meghanada-mode-map
+        :localleader "c" 'meghanada-exec-main))
+#+end_src
+
+Scuffed way to create java projects
+#+begin_src emacs-lisp
+(defun tot/java/create-and-open-project ()
+  (interactive)
+  (let* ((project-name (ivy-read "Project name: " '()))
+         (project-root (expand-file-name project-name "~/_projects"))
+         (project-run-command (concat "mvn package && java -cp target/" project-name "-1.0-SNAPSHOT.jar com.tot.app.App")))
+    (shell-command
+     (concat "cd ~/_projects; mvn archetype:generate -DgroupId=com.tot.app -DartifactId=" project-name " -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false"))
+    (shell-command
+     (concat "cd " project-root "; sed -i 's/1.7/11/g' pom.xml; git init"))
+    (with-temp-file (expand-file-name ".dir-locals.el" project-root)
+      (insert "((nil . ((projectile-project-run-cmd . \"" project-run-command "\"))))"))
+    (+workspaces-switch-to-project-h project-root)
+    ;; (find-file (expand-file-name  "src/main/java/com/tot/app/App.java" project-root))
+    (delete-other-windows)
+    ))
+#+end_src
+
+#+begin_src emacs-lisp
+(setq company-backends '((company-files company-keywords company-yasnippet company-capf))
+      company-statistics-score-calc) 'company-statistics-score-calc-light
+#+end_src
+
+#+begin_src emacs-lisp
+(after! lsp
+  (map! :map lsp-ui-mode-map
+        :n "RET" 'lsp-ui-sideline-apply-code-actions))
+#+end_src
 * Hooks
 #+begin_src emacs-lisp
 (add-hook 'delete-frame-hook '+workspace/delete)
