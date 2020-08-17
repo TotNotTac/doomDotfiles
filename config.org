@@ -320,42 +320,48 @@ Windows hydra
 (setq
  ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center))
  ivy-posframe-height 30
- ivy-posframe-width 110)
+ ivy-posframe-width 110
+ ivy-posframe-border-width 1)
+
+;; (set-face-attribute 'ivy-posframe-border nil :background "#ffffff")
+;; (set-face-attribute 'ivy-posframe-border nil :inherit 'unspecified)
+;; (set-face-attribute 'ivy-posframe-border nil :internal-border-width 1)
+(set-face-attribute 'internal-border nil :background "steel blue")
 #+end_src
 ** Pretty symbols
 #+begin_src emacs-lisp
-(when (featurep! :ui pretty-code)
-  (setq +pretty-code-symbols '(:name "»"
-                               :src_block "»"
-                               :src_block_end "«"
-                               :quote "“"
-                               :quote_end "”"
-                               :lambda "λ"
-                               :def "ƒ"
-                               :defun "ƒ"
-                               :composition "∘"
-                               :map "↦"
-                               :null "∅"
-                               :not "￢"
-                               :and "∧"
-                               :or "∨"
-                               :for "∀"
-                               :some "∃"
-                               :tuple "⨂"
-                               :dot "•"
-                               :begin_quote   "❮"
-                               :end_quote     "❯"
-                               :begin_export  "⯮"
-                               :end_export    "⯬"
-                               :priority_a   "⬆"
-                               :priority_b   "■"
-                               :priority_c   "⬇"
-                               :em_dash       "—"
-                               :property      "☸"
-                               :properties    "⚙"
-                               :checkbox      "☐"
-                               :checkedbox    "☑"
-                               )))
+;; (when (featurep! :ui pretty-code)
+;;   (setq +pretty-code-symbols '(:name "»"
+;;                                :src_block "»"
+;;                                :src_block_end "«"
+;;                                :quote "“"
+;;                                :quote_end "”"
+;;                                :lambda "λ"
+;;                                :def "ƒ"
+;;                                :defun "ƒ"
+;;                                :composition "∘"
+;;                                :map "↦"
+;;                                :null "∅"
+;;                                :not "￢"
+;;                                :and "∧"
+;;                                :or "∨"
+;;                                :for "∀"
+;;                                :some "∃"
+;;                                :tuple "⨂"
+;;                                :dot "•"
+;;                                :begin_quote   "❮"
+;;                                :end_quote     "❯"
+;;                                :begin_export  "⯮"
+;;                                :end_export    "⯬"
+;;                                :priority_a   "⬆"
+;;                                :priority_b   "■"
+;;                                :priority_c   "⬇"
+;;                                :em_dash       "—"
+;;                                :property      "☸"
+;;                                :properties    "⚙"
+;;                                :checkbox      "☐"
+;;                                :checkedbox    "☑"
+;;                                )))
 #+end_src
 
 ** Calc
