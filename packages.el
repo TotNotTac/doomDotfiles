@@ -60,3 +60,5 @@
 (package! theme-magic) ;;Get your emacs themes on the terminal
 (package! doct)
 (package! org-mime)
+(package! bash-completion :disable t)
+(package! company-statistics :recipe (:host github :repo "company-mode/company-statistics"))

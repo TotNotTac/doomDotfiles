@@ -363,6 +363,11 @@ Windows hydra
 (setq calc-algebraic-mode t)
 #+end_src
 ** Eshell
+Fix Eshell company lags
+#+begin_src emacs-lisp
+(setq-hook! 'eshell-mode-hook company-idle-delay nil)
+#+end_src
+
 #+begin_src emacs-lisp
 (when (featurep! :term eshell)
   (add-hook

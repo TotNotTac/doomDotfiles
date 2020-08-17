@@ -22,7 +22,7 @@
        ;; exwm
 
        :completion
-       (company +childframe)            ; the ultimate code completion backend
+       (company +childframe)
        ;; helm              ; the *other* search engine for love and life
        ;;ido               ; the other *other* search engine...
        (ivy +icons)                     ; a search engine for love and life
@@ -39,13 +39,13 @@
        ;; indent-guides     ; highlighted indent columns
        modeline        ; snazzy, Atom-inspired modeline, plus API
        ;;nav-flash         ; blink cursor line after big motions
-       neotree                       ; a project drawer, like NERDTree for vim
        ophints                       ; highlight the region an operation acts on
        (popup
         +all
         +defaults)            ; tame sudden yet inevitable temporary windows
        pretty-code            ; ligatures or substitute text with pretty symbols
        ;; tabs              ; an tab bar for Emacs
+       neotree                       ; a project drawer, like NERDTree for vim
        ;; treemacs          ; a project drawer, like neotree but cooler
        unicode                  ; extended unicode support for various languages
        vc-gutter                ; vcs diff in the fringe
@@ -132,7 +132,7 @@
        ;;hy                ; readability of scheme w/ speed of python
        ;;idris             ;
        json              ; At least it ain't XML
-       (java +meghanada) ; the poster child for carpal tunnel syndrome
+       (java +lsp) ; the poster child for carpal tunnel syndrome
        (javascript +lsp) ; all(hope(abandon(ye(who(enter(here))))))
        ;;julia             ; a better, faster MATLAB
        ;;kotlin            ; a better, slicker Java(Script)
@@ -145,7 +145,7 @@
        nim           ; python + lisp at the speed of c
        ;;nix               ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
-       (org +dragndrop +present)           ; organize your plain life in plain text
+       (org +dragndrop +present +pretty)           ; organize your plain life in plain text
        ;;perl              ; write code no one else can comprehend
        php              ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
