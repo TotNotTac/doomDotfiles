@@ -17,6 +17,23 @@
 (setq doom-theme 'doom-vibrant)
 #+end_src
 
+Unbind `C-z` to stop accidentally turning on Emacs state all the time
+#+begin_src emacs-lisp
+(map! :nvi "C-z" 'nonexistentfunction)
+#+end_src
+
+** TODO Evil in the minibuffer
+#+begin_src emacs-lisp
+;; (setq evil-want-minibuffer t)
+#+end_src
+
+Fix not being able to scroll with `C-j` and `C-k`
+#+begin_src emacs-lisp
+;; (map! :map minibuffer-local-map
+;;       :n "C-j" 'next-line
+;;       :n "C-k" 'previous-line)
+#+end_src
+
 * Package loading
 Get your emacs themes on the terminal
 #+begin_src emacs-lisp
