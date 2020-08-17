@@ -399,6 +399,11 @@ Fix Eshell company lags
     (map! :map org-mode-map
           :localleader "C-e" 'org-edit-src-code)))
 #+end_src
+*** Todo's
+#+begin_src emacs-lisp
+(setq org-agenda-sorting-strategy '(todo-state-up priority-down))
+#+end_src
+
 *** Capture
 **** Create capture frame
 Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. Curse you synchronous programming!
@@ -411,17 +416,22 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
 
 **** Templates
 #+begin_src emacs-lisp
-(setq org-capture-templates
-      (doct '(("Todo" :keys "t"
-               :file "~/org/todo.org"
-               :prepend t
-               :headline "Inbox"
-               :template ("* TODO %^{Description} :%{tag}:"
-                          "%?")
-               :children (("School" :keys "s"
-                           :tag "school")
-                          ("Personal" :keys "p"
-                           :tag "personal"))))))
+(after! org-capture
+  (setq org-capture-templates
+        (doct '(("Todo" :keys "t"
+                 :file "~/org/todo.org"
+                 :prepend t
+                 :headline "Inbox"
+                 :template ("* TODO %^{Description} %^G"
+                            ":PROPERTIES:"
+                            ":CREATED: %U"
+                            ":END:"
+                            "%?"))
+                ("Watchlist" :keys "w"
+                 :file "~/org/watchlist.org"
+                 :headline "Watchlist"
+                 :immediate-finish t
+                 :template ("* [ ] %^{Title}"))))))
 #+end_src
 ** W3M
 #+begin_src emacs-lisp
