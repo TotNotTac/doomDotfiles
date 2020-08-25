@@ -440,8 +440,7 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
 
 **** Templates
 #+begin_src emacs-lisp
-(after! org-capture
-  (setq org-capture-templates
+(after! org-capture (setq org-capture-templates
         (doct '(("Todo" :keys "t"
                  :file "~/org/todo.org"
                  :prepend t
@@ -450,6 +449,13 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
                             ":PROPERTIES:"
                             ":CREATED: %U"
                             ":END:"
+                            "%?"))
+                ("Agenda" :keys "a"
+                 :file "~/org/todo.org"
+                 :prepend t
+                 :headline "Agenda"
+                 :template ("* %^{Description} %^G"
+                            "SCHEDULED: %^T"
                             "%?"))
                 ("Watchlist" :keys "w"
                  :file "~/org/watchlist.org"
@@ -633,7 +639,14 @@ The window scope is determined by `avy-all-windows' (ARG negates it)."
 
 ** Company
 #+begin_src emacs-lisp
-(add-hook 'company-mode-hook 'company-statistics-mode)
+
+(map! :after company
+ :map company-active-map
+      "<tab>" 'yas-expand)
+
+(setq company-backends '((company-files
+                          company-capf))
+      company-dabbrev-other-buffers nil)
 #+end_src
 ** Java
 #+begin_src emacs-lisp
@@ -659,11 +672,6 @@ Scuffed way to create java projects
     ;; (find-file (expand-file-name  "src/main/java/com/tot/app/App.java" project-root))
     (delete-other-windows)
     ))
-#+end_src
-
-#+begin_src emacs-lisp
-(setq company-backends '((company-files company-keywords company-yasnippet company-capf))
-      company-statistics-score-calc) 'company-statistics-score-calc-light
 #+end_src
 
 #+begin_src emacs-lisp

@@ -61,4 +61,11 @@
 (package! doct)
 (package! org-mime)
 (package! bash-completion :disable t)
-(package! company-statistics :recipe (:host github :repo "company-mode/company-statistics"))
+(package! org-pandoc-import
+  :recipe (:host github
+           :repo "tecosaur/org-pandoc-import"
+           :files ("*.el" "filters" "preprocessors")))
+(package! emojify)
+(package! org-pandoc-import
+  :recipe (:host github
+           :repo "kiwanami/emacs-edbi"))
