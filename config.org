@@ -396,7 +396,8 @@ Fix Eshell company lags
   (add-hook
    'eshell-mode-hook
    (lambda ()
-     (setq pcomplete-cycle-completions nil))))
+     (setq pcomplete-cycle-completions nil)
+     (yas-minor-mode-on))))
 
 (defun tot/eshell-other-window ()
   "Open EShell in another window"
