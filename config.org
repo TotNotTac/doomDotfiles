@@ -461,7 +461,16 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
                  :file "~/org/watchlist.org"
                  :headline "Watchlist"
                  :immediate-finish t
-                 :template ("* [ ] %^{Title}"))))))
+                 :template ("* [ ] %^{Title}"))
+                ("Diary entry" :keys "d"
+                 :file "~/org/diary.org"
+                 :prepend t
+                 :headline "Entries"
+                 :template ("* %^T"
+                            ":PROPERTIES:"
+                            ":CREATED: %U"
+                            ":END:"
+                            "%?"))))))
 #+end_src
 ** W3M
 #+begin_src emacs-lisp
