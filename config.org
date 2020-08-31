@@ -19,7 +19,7 @@
 
 Unbind `C-z` to stop accidentally turning on Emacs state all the time
 #+begin_src emacs-lisp
-(map! :nvi "C-z" 'nonexistentfunction)
+;; (map! :nvi "C-z" 'nonexistentfunction)
 #+end_src
 
 ** TODO Evil in the minibuffer
@@ -415,6 +415,12 @@ Fix Eshell company lags
 (defalias 'eshell/o 'find-file)
 (defalias 'eshell/sp 'find-file-other-window)
 #+end_src
+** Magit
+#+begin_src emacs-lisp
+(after! forge
+  (add-to-list 'forge-alist
+               '("gitlab.fdmci.hva.nl" "gitlab.fdmci.hva.nl/api/v4" "gitlab.fdmci.hva.nl" forge-gitlab-repository)))
+#+end_src
 ** Org
 
 #+begin_src emacs-lisp
@@ -509,8 +515,8 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
 #+end_src
 ** Emacs Application Framework
 #+begin_src emacs-lisp
-(use-package eaf
-  :load-path "/home/silas/repositories/emacs-application-framework")
+;; (use-package eaf
+;;   :load-path "/home/silas/repositories/emacs-application-framework")
 #+end_src
 ** Spotify
 #+begin_src emacs-lisp
