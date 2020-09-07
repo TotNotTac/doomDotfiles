@@ -427,7 +427,11 @@ Fix Eshell company lags
 (when (featurep! :lang org)
   (after! org
     (map! :map org-mode-map
-          :localleader "C-e" 'org-edit-src-code)))
+          :localleader "C-e" 'org-edit-src-code)
+    (setq org-startup-folded 'content
+          org-agenda-inhibit-startup nil
+          org-image-actual-width '(500)
+          org-startup-with-inline-images t)))
 #+end_src
 *** Todo's
 #+begin_src emacs-lisp
@@ -472,7 +476,7 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
                  :file "~/org/diary.org"
                  :prepend t
                  :headline "Entries"
-                 :template ("* %^T"
+                 :template ("* %^t"
                             ":PROPERTIES:"
                             ":CREATED: %U"
                             ":END:"
@@ -491,6 +495,11 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
       "n" #'evil-search-next
       "N" #'evil-search-previous
       "M-/" #'swiper)
+#+end_src
+** emojify-mode
+#+begin_src emacs-lisp
+(after! emojify-mode
+  (global-emojify-mode 1))
 #+end_src
 ** Neotree
 #+begin_src emacs-lisp
@@ -589,7 +598,7 @@ Add a nice spotify Hydra
 
 ** theme-magic
 #+begin_src emacs-lisp
-(add-hook 'doom-load-theme-hook 'theme-magic-from-emacs)
+;; (add-hook 'doom-load-theme-hook 'theme-magic-from-emacs)
 #+end_src
 ** Mu4e
 #+begin_src emacs-lisp
