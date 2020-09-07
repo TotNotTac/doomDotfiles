@@ -626,9 +626,6 @@ Turn on queueing mode
 
 ** Avy
 #+begin_src emacs-lisp
-(map! :n "M-f" 'tot/avy-goto-char-timer)
-(setq avy-timeout-seconds 0.35)
-
 (defun tot/avy-goto-char-timer (&optional arg)
   "Read one or many consecutive chars and jump to the first one.
 The window scope is determined by `avy-all-windows' (ARG negates it)."
@@ -642,6 +639,10 @@ The window scope is determined by `avy-all-windows' (ARG negates it)."
           (avy-process avy--old-cands)
         (goto-char (car (car (car avy--old-cands)))))
       (length avy--old-cands))))
+
+(after! avy
+  (map! :n "M-/" 'tot/avy-goto-char-timer)
+  (setq avy-timeout-seconds 0.35))
 #+end_src
 
 ** Elfeed
