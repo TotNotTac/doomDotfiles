@@ -70,3 +70,4 @@
   :recipe (:host github
            :repo "tecosaur/org-pandoc-import"))
 (package! emojify)
+(package! dired-hacks :recipe (:host github :repo "Fuco1/dired-hacks"))
