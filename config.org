@@ -718,3 +718,17 @@ Scuffed way to create java projects
              #'flyspell-mode
              )
 #+end_src
+
+Disable =ivy-posframe-mode= when frame is too small
+
+#+begin_src emacs-lisp
+(defun tot/ivy-posframe-if-frame-size (&rest _)
+  "Function for `window-size-change-functions`."
+  (if (and
+       (> (frame-width) ivy-posframe-width)
+       (> (frame-height) ivy-posframe-height))
+      (ivy-posframe-mode 1)
+    (ivy-posframe-mode 0)))
+
+(add-hook 'window-size-change-functions 'tot/ivy-posframe-if-frame-size)
+#+end_src
