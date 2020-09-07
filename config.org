@@ -515,8 +515,7 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
 #+end_src
 ** Emacs Application Framework
 #+begin_src emacs-lisp
-;; (use-package eaf
-;;   :load-path "/home/silas/repositories/emacs-application-framework")
+(use-package eaf)
 #+end_src
 ** Spotify
 #+begin_src emacs-lisp
