@@ -58,7 +58,7 @@
 (package! command-log-mode)
 (package! ytel)
 (package! impatient-mode)
-(package! theme-magic) ;;Get your emacs themes on the terminal
+;; (package! theme-magic) ;;Get your emacs themes on the terminal
 (package! doct)
 (package! org-mime)
 (package! bash-completion :disable t)
@@ -71,3 +71,4 @@
            :repo "tecosaur/org-pandoc-import"))
 (package! emojify)
 (package! dired-hacks :recipe (:host github :repo "Fuco1/dired-hacks"))
+(package! centered-cursor-mode :recipe (:host github :repo "andre-r/centered-cursor-mode.el"))

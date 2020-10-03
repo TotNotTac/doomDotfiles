@@ -8,13 +8,15 @@
 * Doom related
 #+begin_src emacs-lisp
 (setq doom-font (font-spec :family "monospace" :size 14))
-(setq doom-theme 'doom-vibrant)
+;; (setq doom-theme 'doom-vibrant)
+(setq doom-theme 'sanityinc-tomorrow-bright)
 (setq org-directory "~/org/")
 (setq display-line-numbers-type 'relative)
 
+(setq doom-leader-alt-key nil)
+
 (setq doom-fallback-buffer-name "► Doom"
       +doom-dashboard-name "► Doom")
-(setq doom-theme 'doom-vibrant)
 #+end_src
 
 Unbind `C-z` to stop accidentally turning on Emacs state all the time
@@ -67,6 +69,11 @@ Sql settings
 #+end_src
 ** Functions
 #+begin_src emacs-lisp
+(defun tot/break-out-string-or-parens ()
+  (interactive)
+  (search-forward-regexp "[\"\)']"))
+
+
 (defun tot/save-and-kill-buffer ()
   "Save a buffer before killing"
   (interactive)
@@ -195,11 +202,17 @@ If the you select `hi' then you get the message `Hi'
   (tot/add-digit-argument-def tot/add-digit-argument-0 57))
 #+end_src
 
+#+RESULTS:
+: tot/add-digit-argument-0
+
 * Keymap
 #+begin_src emacs-lisp
+
 (map!
  :v "V" 'er/contract-region
  :v "v" 'er/expand-region
+:i "M-TAB" 'tot/break-out-string-or-parens
+
  :nvime
  "M-n" #'evil-buffer-new
  "M-w" #'tot/save-and-kill-buffer
@@ -461,7 +474,7 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
                  :prepend t
                  :headline "Agenda"
                  :template ("* %^{Description} %^G"
-                            "SCHEDULED: %^T"
+                            "%^T"
                             "%?"))
                 ("Watchlist" :keys "w"
                  :file "~/org/watchlist.org"
@@ -513,17 +526,21 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
     (setq winum-assign-functions '(winum-assign-0-to-neotree))
     (setq winum-auto-assign-0-to-minibuffer nil))
 #+end_src
+** Dired
+#+begin_src emacs-lisp
+(add-hook 'ranger-mode-hook 'dired-filter-mode)
+#+end_src
 ** Emacs Application Framework
 #+begin_src emacs-lisp
 (use-package eaf)
 #+end_src
 ** Spotify
 #+begin_src emacs-lisp
-(use-package spotify
-  :load-path "/home/silas/repositories/spotify.el"
-  :config
-  (load! "personal.el")
-  (define-key spotify-mode-map (kbd "C-c .") 'spotify-command-map))
+;; (use-package spotify
+;;   :load-path "/home/silas/repositories/spotify.el"
+;;   :config
+;;   (load! "personal.el")
+;;   (define-key spotify-mode-map (kbd "C-c .") 'spotify-command-map))
 #+end_src
 
 Add a nice spotify Hydra
@@ -589,7 +606,7 @@ Add a nice spotify Hydra
 
 ** theme-magic
 #+begin_src emacs-lisp
-(add-hook 'doom-load-theme-hook 'theme-magic-from-emacs)
+;; (add-hook 'doom-load-theme-hook 'theme-magic-from-emacs)
 #+end_src
 ** Mu4e
 #+begin_src emacs-lisp
@@ -641,7 +658,7 @@ The window scope is determined by `avy-all-windows' (ARG negates it)."
       (length avy--old-cands))))
 
 (after! avy
-  (map! :n "M-/" 'tot/avy-goto-char-timer)
+  (map! :n "M-f" 'tot/avy-goto-char-timer)
   (setq avy-timeout-seconds 0.35))
 #+end_src
 
