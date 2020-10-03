@@ -66,9 +66,8 @@
   :recipe (:host github
            :repo "tecosaur/org-pandoc-import"
            :files ("*.el" "filters" "preprocessors")))
-(package! org-pandoc-import
-  :recipe (:host github
-           :repo "tecosaur/org-pandoc-import"))
+(package! ox-pandoc :recipe (:host github :repo "kawabata/ox-pandoc"))
 (package! emojify)
 (package! dired-hacks :recipe (:host github :repo "Fuco1/dired-hacks"))
 (package! centered-cursor-mode :recipe (:host github :repo "andre-r/centered-cursor-mode.el"))
+(package! cstby/solo-jazz-emacs-theme :recipe (:host github :repo "cstby/solo-jazz-emacs-theme"))

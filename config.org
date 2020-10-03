@@ -440,7 +440,11 @@ Fix Eshell company lags
 (when (featurep! :lang org)
   (after! org
     (map! :map org-mode-map
-          :localleader "C-e" 'org-edit-src-code)))
+          :localleader "C-e" 'org-edit-src-code)
+    (setq org-startup-folded 'content
+          org-agenda-inhibit-startup nil
+          org-image-actual-width '(500)
+          org-startup-with-inline-images t)))
 #+end_src
 *** Todo's
 #+begin_src emacs-lisp
@@ -485,7 +489,7 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
                  :file "~/org/diary.org"
                  :prepend t
                  :headline "Entries"
-                 :template ("* %^T"
+                 :template ("* %^t"
                             ":PROPERTIES:"
                             ":CREATED: %U"
                             ":END:"
@@ -504,6 +508,11 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
       "n" #'evil-search-next
       "N" #'evil-search-previous
       "M-/" #'swiper)
+#+end_src
+** emojify-mode
+#+begin_src emacs-lisp
+(after! emojify-mode
+  (global-emojify-mode 1))
 #+end_src
 ** Neotree
 #+begin_src emacs-lisp
@@ -725,4 +734,18 @@ Scuffed way to create java projects
                git-commit-mode-hook)
              #'flyspell-mode
              )
+#+end_src
+
+Disable =ivy-posframe-mode= when frame is too small
+
+#+begin_src emacs-lisp
+(defun tot/ivy-posframe-if-frame-size (&rest _)
+  "Function for `window-size-change-functions`."
+  (if (and
+       (> (frame-width) ivy-posframe-width)
+       (> (frame-height) ivy-posframe-height))
+      (ivy-posframe-mode 1)
+    (ivy-posframe-mode 0)))
+
+(add-hook 'window-size-change-functions 'tot/ivy-posframe-if-frame-size)
 #+end_src
