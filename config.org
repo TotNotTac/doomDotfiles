@@ -357,6 +357,11 @@ Windows hydra
 #+end_src
 
 * Packages
+** Winum
+#+begin_src emacs-lisp
+(after! 'winum
+  (setq winum-scope 'visible))
+#+end_src
 ** Ivy-posframe
 #+begin_src emacs-lisp
 (ivy-posframe-enable)
