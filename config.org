@@ -17,7 +17,7 @@
 (setq org-directory "~/org/")
 (setq display-line-numbers-type 'relative)
 
-(setq doom-leader-alt-key nil)
+(setq doom-leader-alt-key "M-SPC")
 
 (setq doom-fallback-buffer-name "► Doom"
       +doom-dashboard-name "► Doom")
