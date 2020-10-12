@@ -8,8 +8,12 @@
 * Doom related
 #+begin_src emacs-lisp
 (setq doom-font (font-spec :family "monospace" :size 14))
-;; (setq doom-theme 'doom-vibrant)
-(setq doom-theme 'sanityinc-tomorrow-bright)
+
+(defvar doom-theme-light 'tsdgh-light)
+(defvar doom-theme-dark 'sanityinc-tomorrow-bright)
+
+(setq doom-theme doom-theme-dark)
+
 (setq org-directory "~/org/")
 (setq display-line-numbers-type 'relative)
 
@@ -69,6 +73,15 @@ Sql settings
 #+end_src
 ** Functions
 #+begin_src emacs-lisp
+(defun tot/theme-toggle ()
+  (interactive)
+  (if (eq doom-theme doom-theme-dark)
+      (setq doom-theme doom-theme-light)
+    (setq doom-theme doom-theme-dark)
+      )
+  (doom/reload-theme))
+
+
 (defun tot/break-out-string-or-parens ()
   (interactive)
   (search-forward-regexp "[\"\)']"))
@@ -209,9 +222,10 @@ If the you select `hi' then you get the message `Hi'
 #+begin_src emacs-lisp
 
 (map!
+ (:leader "t t" 'tot/theme-toggle)
  :v "V" 'er/contract-region
  :v "v" 'er/expand-region
-:i "M-TAB" 'tot/break-out-string-or-parens
+ :i "M-TAB" 'tot/break-out-string-or-parens
 
  :nvime
  "M-n" #'evil-buffer-new
