@@ -575,7 +575,7 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
 #+end_src
 ** Emacs Application Framework
 #+begin_src emacs-lisp
-(use-package eaf)
+;; (use-package eaf)
 #+end_src
 ** Spotify
 #+begin_src emacs-lisp
@@ -766,7 +766,7 @@ Scuffed way to create java projects
                mu4e-compose-mode-hook
                message-mode-hook
                git-commit-mode-hook)
-             #'flyspell-mode
+             ;; #'flyspell-mode
              )
 #+end_src
 
