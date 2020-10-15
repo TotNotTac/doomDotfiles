@@ -525,6 +525,10 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
                             ":END:"
                             "%?"))))))
 #+end_src
+*** Alerts
+#+begin_src emacs-lisp
+(setq alert-default-style 'libnotify)
+#+end_src
 ** W3M
 #+begin_src emacs-lisp
 (map! :map w3m-mode-map

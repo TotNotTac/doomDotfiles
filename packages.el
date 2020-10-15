@@ -71,3 +71,4 @@
 (package! dired-hacks :recipe (:host github :repo "Fuco1/dired-hacks"))
 (package! centered-cursor-mode :recipe (:host github :repo "andre-r/centered-cursor-mode.el"))
 ;; (package! cstby/solo-jazz-emacs-theme :recipe (:host github :repo "cstby/solo-jazz-emacs-theme"))
+(package! org-alert :recipe (:host github :repo "spegoraro/org-alert"))
