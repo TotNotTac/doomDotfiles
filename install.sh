@@ -1,6 +1,7 @@
 #!/bin/bash
 
 error=0
+doomCommit=1456108d5bef89195b2b63f962e0ae9d24f4c652
 
 if command -v git >/dev/null 2>&1
 then
@@ -28,6 +29,5 @@ then
 fi
 
 git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.emacs.d
+git checkout $doomCommit
 ~/.emacs.d/bin/doom install
-
-emacs & disown
