@@ -329,8 +329,8 @@ If the you select `hi' then you get the message `Hi'
 Windows hydra
 #+begin_src emacs-lisp
 (defhydra windows-hydra (:hint nil) ""
-  ("s" split-window-right "Horizontal" :column "Splits")
-  ("v" split-window-below "Vertical" :column "Splits")
+  ("s" split-window-below "Horizontal" :column "Splits")
+  ("v" split-window-right "Vertical" :column "Splits")
   ("c" +workspace/close-window-or-workspace "Close")
   ("h" windmove-left "Left" :column "Switch window")
   ("l" windmove-right "Right" :column "Switch window")
