@@ -418,6 +418,16 @@ Windows hydra
 #+begin_src emacs-lisp
 (setq calc-algebraic-mode t)
 #+end_src
+** CalFW
+#+begin_src emacs-lisp
+(after! (org org-agenda)
+  (map!
+   (:leader
+    "o c" #'cfw:open-org-calendar)
+   (:map (cfw:calendar-mode-map cfw:org-custom-map cfw:org-schedule-map)
+    "SPC" nil
+    "q" #'kill-current-buffer)))
+#+end_src
 ** Eshell
 Fix Eshell company lags
 #+begin_src emacs-lisp
