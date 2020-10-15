@@ -222,7 +222,8 @@ If the you select `hi' then you get the message `Hi'
 #+begin_src emacs-lisp
 
 (map!
- (:leader "t t" 'tot/theme-toggle)
+ (:leader "t t" #'tot/theme-toggle
+  "t a" #'auto-fill-mode)
  :v "V" 'er/contract-region
  :v "v" 'er/expand-region
  :i "M-TAB" 'tot/break-out-string-or-parens
