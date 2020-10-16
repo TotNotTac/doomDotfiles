@@ -2,4 +2,4 @@
 # name: birthday
 # condition: t
 # --
-%%(org-anniversary ${1:year} ${2:month} ${3:day}) ${4:person} is %d years old
+%%(org-anniversary ${1:year} ${2:month} ${3:day}) `(org-entry-get nil "ITEM")` is %d years old
