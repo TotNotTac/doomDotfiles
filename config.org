@@ -532,7 +532,50 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
 #+end_src
 *** Alerts
 #+begin_src emacs-lisp
-(setq alert-default-style 'libnotify)
+(require 'org-alert)
+
+(org-alert-enable)
+(setq alert-default-style 'notifications)
+#+end_src
+*** Super agenda
+#+begin_src emacs-lisp
+;; (after! org
+;;   (require 'org-super-agenda)
+
+;; (setq org-agenda-skip-scheduled-if-done t
+;;       org-agenda-skip-deadline-if-done t
+;;       org-agenda-include-deadlines t
+;;       org-agenda-block-separator nil
+;;       org-agenda-tags-column 80 ;; from testing this seems to be a good value
+;;       org-agenda-compact-blocks t)
+
+;; (setq org-agenda-custom-commands
+;;  '(("o" "overview"
+;;     ((agenda "" ((org-agenda-span 'day)
+;;                  (org-super-agenda-groups
+;;                   '((:name "Today"
+;;                      :time-grid t
+;;                      :date today
+;;                      :todo "TODAY"
+;;                      :order 1)
+;;                     ))))
+;;      (alltodo "" ((org-agenda-overriding-header "")
+;;                   (org-super-agenda-groups
+;;                    '(
+;;                      (:name "Today"
+;;                       :date today)
+;;                      (:name "Due soon"
+;;                       :deadline future)
+;;                      (:name "Schedule"
+;;                       :date t)
+;;                      (:name "Todo's"
+;;                       :todo ("START" "TODO"))
+;;                      (:name "Projects"
+;;                       :todo "PROJ")
+;;                      (:discard (:anything))))))))))
+
+;;   (org-super-agenda-mode)
+;;   )
 #+end_src
 ** W3M
 #+begin_src emacs-lisp
