@@ -464,6 +464,11 @@ Fix Eshell company lags
   (add-to-list 'forge-alist
                '("gitlab.fdmci.hva.nl" "gitlab.fdmci.hva.nl/api/v4" "gitlab.fdmci.hva.nl" forge-gitlab-repository)))
 #+end_src
+
+#+begin_src emacs-lisp
+(setq magit-repository-directories `(("~/repos/" . 1)
+                                     ("~/proj/" . 1)))
+#+end_src
 ** Org
 
 #+begin_src emacs-lisp
