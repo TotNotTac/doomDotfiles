@@ -7,12 +7,12 @@
 #+end_src
 * Doom related
 #+begin_src emacs-lisp
-(setq doom-font (font-spec :family "monospace" :size 14))
+(setq doom-font (font-spec :family "Fira Code" :size 16))
 
-(defvar doom-theme-light 'tsdgh-light)
+(defvar doom-theme-light 'doom-vibrant)
 (defvar doom-theme-dark 'sanityinc-tomorrow-bright)
 
-(setq doom-theme doom-theme-dark)
+(setq doom-theme doom-theme-light)
 
 (setq org-directory "~/org/")
 (setq display-line-numbers-type 'relative)
@@ -20,7 +20,7 @@
 (setq doom-leader-alt-key "M-SPC")
 
 (setq doom-fallback-buffer-name "► Doom"
-      +doom-dashboard-name "► Doom")
+      +doom-dashboard-name "► Dashboard")
 #+end_src
 
 Unbind `C-z` to stop accidentally turning on Emacs state all the time
