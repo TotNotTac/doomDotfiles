@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: decorator #@
+# uuid: decorator
+# key: @
+# condition: t
+# --
+#@($0)
