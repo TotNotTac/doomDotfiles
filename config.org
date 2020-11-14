@@ -103,7 +103,7 @@ Sql settings
 (defun tot/window-split-smart ()
   "Splits window into two. It'll split so the difference between the height and the width of a window is as small as possible"
   (interactive)
-  (if (> (window-pixel-height) (window-pixel-width))
+  (if (>= (window-pixel-height) (window-pixel-width))
       ;; then
       (split-window-below)
     ;; else
@@ -365,7 +365,7 @@ Windows hydra
 #+end_src
 ** Ivy-posframe
 #+begin_src emacs-lisp
-(ivy-posframe-enable)
+(ivy-posframe-mode 1)
 
 (setq
  ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center))
