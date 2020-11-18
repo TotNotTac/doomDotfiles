@@ -1,0 +1,6 @@
+# key: Scanner
+# name: Scanner
+# condition: t
+# --
+Scanner input = new Scanner(System.in);
+$0
