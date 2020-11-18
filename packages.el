@@ -77,3 +77,4 @@
 (package! org-ql :recipe (:host github :repo "alphapapa/org-ql"))
 ;; (package! company-tabnine :recipe (:host github :repo "TommyX12/company-tabnine"
 ;;                                    :files ("*.el" "*.sh")))
+(package! exwm)

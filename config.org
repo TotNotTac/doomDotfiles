@@ -357,14 +357,79 @@ Windows hydra
 #+end_src
 
 * Packages
+** EXWM
+#+begin_src emacs-lisp
+(defun exwm/update-class ()
+  (exwm-workspace-rename-buffer exwm-class-name))
+
+(use-package exwm
+  :config
+  (setq exwm-workspace-number 10)
+
+  (add-hook 'exwm-update-class-hook #'exwm/update-class)
+
+  ;;(define-key exwm-mode-map [?\m-s-\ ] 'exwm-input-send-next-key)
+
+  (start-process-shell-command "xmodmap" nil "xmodmap ~/.doom.d/exwm/xmodmap")
+
+
+
+  ;; (require 'exwm-systemtray)
+  ;; (exwm-systemtray-enable)
+  ;(display-time)
+
+
+  (setq doom-leader-alt-key "s-SPC")
+
+  (map! doom-leader-alt-key #'doom/leader)
+
+  (setq exwm-input-prefix-keys
+        '(?\s-\ ?\M-x ?\C-x))
+
+  (setq exwm-workspace-index-map
+        (lambda (index) (number-to-string (1+ index))))
+
+  (dotimes (i 10)
+    (exwm-input-set-key (kbd (format "s-%d" i))
+                        `(lambda ()
+                           (interactive)
+                           (exwm-workspace-switch-create (1- ,i)))))
+
+  (setq exwm-input-global-keys
+        '(([?\s-r] . exwm-reset)
+          ([?\s-h] . windmove-left)
+          ([?\s-l] . windmove-right)
+          ([?\s-k] . windmove-up)
+          ([?\s-j] . windmove-down)
+          ([?\s-H] . windmove-swap-states-left)
+          ([?\s-L] . windmove-swap-states-right)
+          ([?\s-K] . windmove-swap-states-up)
+          ([?\s-J] . windmove-swap-states-down)
+          ([?\s-o] . counsel-linux-app)
+          ([?\s-w] . tot/save-and-kill-buffer)
+          ([?\s-W] . +workspace/close-window-or-workspace)
+          ([?\s-n] . evil-buffer-new)
+          ([?\s-N] . tot/window-split-smart)
+          ([s-return] . exwm-workspace-move-window)))
+  (exwm-enable)
+
+  ;; (call-process-shell-command "nm-applet &" nil 0)
+  )
+#+end_src
 ** Winum
 #+begin_src emacs-lisp
 (after! 'winum
   (setq winum-scope 'visible))
 #+end_src
+** Ivy
+#+begin_src emacs-lisp
+(after! ivy
+  (map! :map ivy-mode-map
+        "C-SPC" 'ivy-mark))
+#+end_src
 ** Ivy-posframe
 #+begin_src emacs-lisp
-(ivy-posframe-mode 1)
+;;(ivy-posframe-mode 1)
 
 (setq
  ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center))
@@ -829,5 +894,5 @@ Disable =ivy-posframe-mode= when frame is too small
       (ivy-posframe-mode 1)
     (ivy-posframe-mode 0)))
 
-(add-hook 'window-size-change-functions 'tot/ivy-posframe-if-frame-size)
+;;(add-hook 'window-size-change-functions 'tot/ivy-posframe-if-frame-size)
 #+end_src
