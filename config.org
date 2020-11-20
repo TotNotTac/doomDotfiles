@@ -523,7 +523,7 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
                  :file "~/org/watchlist.org"
                  :headline "Watchlist"
                  :immediate-finish t
-                 :template ("%(org-imdb-capture-title)"))
+                 :template ("* [ ] %(org-imdb-capture-title)"))
                 ("Diary entry" :keys "d"
                  :file "~/org/diary.org"
                  :prepend t

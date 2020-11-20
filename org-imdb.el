@@ -3,12 +3,12 @@
 (defun org-imdb-capture-title ()
   "Reads for an Imdb title. If there's more than one possible canditate, ask the user to make a selction. Returns a formatted org-mode string"
   (let* ((query (read-string "Imdb title: "))
-         (dom (with-current-buffer (url-retrieve-synchronously (concat "https://www.imdb.com/find?q=" query "&s=tt&exact=true&ref_=fn_tt_ex"))
+         (dom (with-current-buffer (url-retrieve-synchronously (concat "https://www.imdb.com/find?q=" query "&s=tt&ref_=fn_al_tt_mr"))
                 (libxml-parse-html-region (point-min) (point-max))))
          (canditates (mapcar (lambda (x) `(,(string-trim (dom-texts x)) .
                                       ,(concat "https://www.imdb.com" (dom-attr (dom-by-tag x 'a) 'href))))
                              (dom-children (dom-by-class dom "^findList$"))))
-         (url (cdr (assoc (completing-read "Select a candidate" canditates)
+         (url (cdr (assoc (completing-read "Select a candidate: " canditates nil t (downcase query))
                           canditates)))
          (recipe (org-imdb-fetch-url url)))
     (org-imdb-get-org-recipe-string recipe)))
@@ -51,7 +51,6 @@
   "Inserts RECIPE"
   (org-insert-heading)
   (insert (cdr (assoc 'title recipe)))
-  (org-todo "[ ]")
   (org-return)
   (org-set-property "url" (cdr (assoc 'url recipe)))
   (org-set-property "time" (cdr (assoc 'time recipe)))
@@ -68,6 +67,8 @@
   (org-insert-heading)
   (insert "Summary")
   (org-return)
-  (insert (cdr (assoc 'summary recipe))))
+  (insert (cdr (assoc 'summary recipe)))
+  (goto-char (point-min))
+  (delete-char 2))
 
 (provide 'org-imdb)
