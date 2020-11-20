@@ -51,7 +51,7 @@
 (package! ivy-posframe :recipe (:host github :repo "tumashu/ivy-posframe"))
 (package! eaf :recipe (:host github :repo "manateelazycat/emacs-application-framework"
                        :files ("*.el" "app" "core" "*.py")))
-(package! calfw :recipe (:host github :repo "kiwanami/emacs-calfw"))
+;; (package! calfw :recipe (:host github :repo "kiwanami/emacs-calfw"))
 (package! w3m)
 (package! sx)
 (package! elfeed)
@@ -70,5 +70,10 @@
 (package! emojify)
 (package! dired-hacks :recipe (:host github :repo "Fuco1/dired-hacks"))
 (package! centered-cursor-mode :recipe (:host github :repo "andre-r/centered-cursor-mode.el"))
+;; (package! org-alert :recipe (:host github :repo "spegoraro/org-alert"
+;;                              :files ("org-alert.el")))
 ;; (package! cstby/solo-jazz-emacs-theme :recipe (:host github :repo "cstby/solo-jazz-emacs-theme"))
-(package! org-alert :recipe (:host github :repo "spegoraro/org-alert"))
+;; (package! org-super-agenda :recipe (:host github :repo "alphapapa/org-super-agenda"))
+(package! org-ql :recipe (:host github :repo "alphapapa/org-ql"))
+;; (package! company-tabnine :recipe (:host github :repo "TommyX12/company-tabnine"
+;;                                    :files ("*.el" "*.sh")))

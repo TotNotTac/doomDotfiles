@@ -7,10 +7,10 @@
 #+end_src
 * Doom related
 #+begin_src emacs-lisp
-(setq doom-font (font-spec :family "Fira Code" :size 16))
+(setq doom-font (font-spec :family "Hack" :size 16))
 
-(defvar doom-theme-light 'doom-vibrant)
-(defvar doom-theme-dark 'sanityinc-tomorrow-bright)
+(setq doom-theme-light 'doom-vibrant)
+(setq doom-theme-dark 'doom-molokai)
 
 (setq doom-theme doom-theme-light)
 
@@ -77,8 +77,7 @@ Sql settings
   (interactive)
   (if (eq doom-theme doom-theme-dark)
       (setq doom-theme doom-theme-light)
-    (setq doom-theme doom-theme-dark)
-      )
+    (setq doom-theme doom-theme-dark))
   (doom/reload-theme))
 
 
@@ -107,7 +106,7 @@ Sql settings
       ;; then
       (split-window-below)
     ;; else
-    (+evil-window-vsplit-a)))
+    (split-window-right)))
 
 ;; SX mode
 (defun tot/sx/display-question ()
@@ -420,13 +419,13 @@ Windows hydra
 #+end_src
 ** CalFW
 #+begin_src emacs-lisp
-(after! (org org-agenda)
-  (map!
-   (:leader
-    "o c" #'cfw:open-org-calendar)
-   (:map (cfw:calendar-mode-map cfw:org-custom-map cfw:org-schedule-map)
-    "SPC" nil
-    "q" #'kill-current-buffer)))
+;; (after! (org org-agenda)
+;;   (map!
+;;    (:leader
+;;     "o c" #'cfw:open-org-calendar)
+;;    (:map (cfw:calendar-mode-map cfw:org-custom-map cfw:org-schedule-map)
+;;     "SPC" nil
+;;     "q" #'kill-current-buffer)))
 #+end_src
 ** Eshell
 Fix Eshell company lags
@@ -504,9 +503,6 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
                  :prepend t
                  :headline "Inbox"
                  :template ("* TODO %^{Description} %^G"
-                            ":PROPERTIES:"
-                            ":CREATED: %U"
-                            ":END:"
                             "%?"))
                 ("Agenda" :keys "a"
                  :file "~/org/todo.org"
@@ -773,9 +769,13 @@ The window scope is determined by `avy-all-windows' (ARG negates it)."
 #+end_src
 ** Java
 #+begin_src emacs-lisp
-(after! 'meghanda
-  (map! :map meghanada-mode-map
-        :localleader "c" 'meghanada-exec-main))
+(setenv "JAVA_HOME"  "/usr/lib/jvm/default")
+(setq lsp-java-java-path "/usr/lib/jvm/default/bin/java")
+#+end_src
+#+begin_src emacs-lisp
+;; (after! 'meghanda
+;;   (map! :map meghanada-mode-map
+;;         :localleader "c" 'meghanada-exec-main))
 #+end_src
 
 Scuffed way to create java projects
@@ -805,7 +805,7 @@ Scuffed way to create java projects
 * Hooks
 #+begin_src emacs-lisp
 (add-hook 'delete-frame-hook '+workspace/delete)
-(add-hook 'emacs-startup-hook 'org-agenda-list)
+;;(add-hook 'emacs-startup-hook 'org-agenda-list)
 
 (remove-hook! '(org-mode-hook
                markdown-mode-hook
