@@ -497,7 +497,10 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
 
 **** Templates
 #+begin_src emacs-lisp
-(after! org-capture (setq org-capture-templates
+(after! org-capture
+  (load "~/.doom.d/org-imdb.el")
+
+  (setq org-capture-templates
         (doct '(("Todo" :keys "t"
                  :file "~/org/todo.org"
                  :prepend t
@@ -516,6 +519,11 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
                  :headline "Watchlist"
                  :immediate-finish t
                  :template ("* [ ] %^{Title}"))
+                ("Watchlist with IMDB" :keys "W"
+                 :file "~/org/watchlist.org"
+                 :headline "Watchlist"
+                 :immediate-finish t
+                 :template ("%(org-imdb-capture-title)"))
                 ("Diary entry" :keys "d"
                  :file "~/org/diary.org"
                  :prepend t
