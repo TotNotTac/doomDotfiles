@@ -19,14 +19,17 @@
        ;;japanese
 
        :completion
-       (company +childframe)
+                                        ;(company +childframe)
+       company
        ;; helm                                  ; the *other* search engine for love and life
        ;;ido                                    ; the other *other* search engine...
        (ivy
         +icons
         +prescient
+        +childframe
         ;; +fuzzy
-        )                                       ; a search engine for love and life
+        )
+                                        ; a search engine for love and life
 
        :ui
        ;;deft                                   ; notational velocity for Emacs
@@ -38,14 +41,14 @@
        hydra
        minimap
        ;; indent-guides                         ; highlighted indent columns
-       modeline                                 ; snazzy, Atom-inspired modeline, plus API
+       modeline ; snazzy, Atom-inspired modeline, plus API
        ;;nav-flash                              ; blink cursor line after big motions
        ophints                                  ; highlight the region an operation acts on
        (popup
         +all
         +defaults)                              ; tame sudden yet inevitable temporary windows
-       (ligatures +fira)
-       ;; tabs                                  ; an tab bar for Emacs
+       ;; (ligatures +fira)
+       tabs                                  ; an tab bar for Emacs
        neotree                                  ; a project drawer, like NERDTree for vim
        ;; treemacs                              ; a project drawer, like neotree but cooler
        unicode                                  ; extended unicode support for various languages

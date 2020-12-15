@@ -67,13 +67,14 @@
            :repo "tecosaur/org-pandoc-import"
            :files ("*.el" "filters" "preprocessors")))
 (package! ox-pandoc :recipe (:host github :repo "kawabata/ox-pandoc"))
-(package! emojify)
-(package! dired-hacks :recipe (:host github :repo "Fuco1/dired-hacks"))
-(package! centered-cursor-mode :recipe (:host github :repo "andre-r/centered-cursor-mode.el"))
-;; (package! org-alert :recipe (:host github :repo "spegoraro/org-alert"
+;(package! emojify)
+;(package! dired-hacks :recipe (:host github :repo "Fuco1/dired-hacks"))
+;(package! centered-cursor-mode :recipe (:host github :repo "andre-r/centered-cursor-mode.el"))
+(package! org-alert :recipe (:host github :repo "spegoraro/org-alert"))
 ;;                              :files ("org-alert.el")))
 ;; (package! cstby/solo-jazz-emacs-theme :recipe (:host github :repo "cstby/solo-jazz-emacs-theme"))
 ;; (package! org-super-agenda :recipe (:host github :repo "alphapapa/org-super-agenda"))
 (package! org-ql :recipe (:host github :repo "alphapapa/org-ql"))
 ;; (package! company-tabnine :recipe (:host github :repo "TommyX12/company-tabnine"
 ;;                                    :files ("*.el" "*.sh")))
+(package! aggressive-indent :recipe (:host github :repo "Malabarba/aggressive-indent-mode"))

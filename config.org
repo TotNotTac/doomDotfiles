@@ -10,7 +10,7 @@
 (setq doom-font (font-spec :family "Hack" :size 18))
 
 (setq doom-theme-light 'doom-vibrant)
-(setq doom-theme-dark 'doom-molokai)
+(setq doom-theme-dark 'doom-monokai-pro)
 
 (setq doom-theme doom-theme-light)
 
@@ -86,10 +86,10 @@ Sql settings
   (search-forward-regexp "[\"\)']"))
 
 
-(defun tot/save-and-kill-buffer ()
+(defun tot/save-and-kill-buffer (&optional arg)
   "Save a buffer before killing"
-  (interactive)
-  (unless (string-match-p ".*\\*.*\\*.*" (buffer-name))
+  (interactive "P")
+  (unless (or (string-match-p ".*\\*.*\\*.*" (buffer-name)) arg)
     (save-buffer))
   (kill-buffer))
 
@@ -364,18 +364,26 @@ Windows hydra
 #+end_src
 ** Ivy-posframe
 #+begin_src emacs-lisp
-(ivy-posframe-mode 1)
+(after! 'ivy
+  (setq
+   ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center))
+   ivy-posframe-height 30
+   ivy-posframe-width 110
+   ivy-posframe-border-width 1)
 
-(setq
- ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center))
- ivy-posframe-height 30
- ivy-posframe-width 110
- ivy-posframe-border-width 1)
+  ;; (set-face-attribute 'ivy-posframe-border nil :background "#ffffff")
+  ;; (set-face-attribute 'ivy-posframe-border nil :inherit 'unspecified)
+  ;; (set-face-attribute 'ivy-posframe-border nil :internal-border-width 1)
 
-;; (set-face-attribute 'ivy-posframe-border nil :background "#ffffff")
-;; (set-face-attribute 'ivy-posframe-border nil :inherit 'unspecified)
-;; (set-face-attribute 'ivy-posframe-border nil :internal-border-width 1)
-(set-face-attribute 'internal-border nil :background "steel blue")
+  (set-face-attribute 'internal-border nil :background "steel blue")
+  (ivy-posframe-mode 1))
+#+end_src
+** Projects
+#+begin_src emacs-lisp
+(use-package projectile
+  :config
+  (setq projectile-project-search-path '("~/proj")
+        projectile-require-project-root nil))
 #+end_src
 ** Pretty symbols
 #+begin_src emacs-lisp
@@ -480,11 +488,37 @@ Fix Eshell company lags
           org-image-actual-width '(500)
           org-startup-with-inline-images t)))
 #+end_src
+
+*** Visuals
+#+begin_src emacs-lisp
+(after! org-superstar
+  (setq org-superstar-headline-bullets-list '("◉" "○" "✸" "✿" "✤" "✜" "◆" "▶")
+        org-superstar-prettify-item-bullets t ))
+#+end_src
+
+Nicer folding character
+#+begin_src emacs-lisp
+(after! org
+  (setq org-ellipsis " ▾ "
+        org-hide-leading-stars t
+        org-priority-highest ?A
+        org-priority-lowest ?E
+        org-priority-faces
+        '((?A . 'all-the-icons-red)
+          (?B . 'all-the-icons-orange)
+          (?C . 'all-the-icons-yellow)
+          (?D . 'all-the-icons-green)
+          (?E . 'all-the-icons-blue))))
+#+end_src
 *** Todo's
 #+begin_src emacs-lisp
 (setq org-agenda-sorting-strategy '(todo-state-up priority-down))
 #+end_src
-
+*** Contacts
+#+begin_src emacs-lisp
+(after! org
+  (setq org-contacts-files '("/home/silas/org/contacts.org")))
+#+end_src
 *** Capture
 **** Create capture frame
 Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. Curse you synchronous programming!
@@ -498,7 +532,7 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
 **** Templates
 #+begin_src emacs-lisp
 (after! org-capture
-  (load "~/.doom.d/org-imdb.el")
+  (load "~/.doom.d/org-imdb/org-imdb.el")
 
   (setq org-capture-templates
         (doct '(("Todo" :keys "t"
@@ -753,6 +787,7 @@ The window scope is determined by `avy-all-windows' (ARG negates it)."
       (length avy--old-cands))))
 
 (after! avy
+  (setq avy-single-candidate-jump t)
   (map! :n "M-f" 'tot/avy-goto-char-timer)
   (setq avy-timeout-seconds 0.35))
 #+end_src
@@ -809,6 +844,23 @@ Scuffed way to create java projects
 (after! lsp
   (map! :map lsp-ui-mode-map
         :n "RET" 'lsp-ui-sideline-apply-code-actions))
+#+end_src
+** aggressive indent
+#+begin_src emacs-lisp
+(add-hook 'lispy-mode-hook #'aggressive-indent-mode)
+(add-hook 'css-mode-hook #'aggressive-indent-mode)
+#+end_src
+** Centaur tabs
+#+begin_src emacs-lisp
+(use-package centaur-tabs
+  :config
+  (setq
+   ;;centaur-tabs-style "rounded"
+        ;; centaur-tabs-height "24"
+        centaur-tabs-set-close-button nil
+        centaur-tabs-set-modified-marker t)
+  :hook
+  (dired-mode . centaur-tabs-local-mode))
 #+end_src
 * Hooks
 #+begin_src emacs-lisp
