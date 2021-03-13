@@ -657,7 +657,7 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
 #+end_src
 ** Dired
 #+begin_src emacs-lisp
-(add-hook 'ranger-mode-hook 'dired-filter-mode)
+;; (add-hook 'ranger-mode-hook 'dired-filter-mode)
 #+end_src
 ** Emacs Application Framework
 #+begin_src emacs-lisp
