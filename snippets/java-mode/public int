@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: public int
+# key: pi
+# --
+public int $0

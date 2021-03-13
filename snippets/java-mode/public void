@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: public void
+# key: pv
+# --
+public void $0
