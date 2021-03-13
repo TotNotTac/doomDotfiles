@@ -489,6 +489,110 @@ Fix Eshell company lags
           org-startup-with-inline-images t)))
 #+end_src
 
+*** Presentations
+#+begin_src emacs-lisp
+(defun dw/org-start-presentation ()
+  (interactive)
+  (org-tree-slide-mode 1)
+  (setq text-scale-mode-amount 3)
+  (text-scale-mode 1)
+  (setq display-line-numbers nil))
+
+(defun dw/org-end-presentation ()
+  (interactive)
+  (text-scale-mode 0)
+  (org-tree-slide-mode 0)
+  ;; (setq display-line-numbers )
+  )
+
+(use-package org-tree-slide
+  :defer t
+  :after org
+  :commands org-tree-slide-mode
+  :config
+  (evil-define-key 'normal org-tree-slide-mode-map
+    (kbd "q") 'dw/org-end-presentation
+    (kbd "C-j") 'org-tree-slide-move-next-tree
+    (kbd "C-k") 'org-tree-slide-move-previous-tree)
+  (setq org-tree-slide-slide-in-effect nil
+        org-tree-slide-activate-message "Presentation started."
+        org-tree-slide-deactivate-message "Presentation ended."
+        org-tree-slide-header t
+        org-tree-slide-never-touch-face nil
+        org-tree-slide-breadcrumbs " // "
+        ))
+
+(map! :after org
+      :map org-mode-map
+      :leader "tp" #'dw/org-start-presentation)
+#+end_src
+
+*** LaTeX
+#+begin_src emacs-lisp
+;; (after! org
+;;   (setq org-latex-classes '("article"
+;;                  "\\documentclass[11pt,a4paper]{article}
+;; \\usepackage[utf8]{inputenc}
+;; \\usepackage[T1]{fontenc}
+;; \\usepackage{fixltx2e}
+;; \\usepackage{graphicx}
+;; \\usepackage{longtable}
+;; \\usepackage{float}
+;; \\usepackage{wrapfig}
+;; \\usepackage{rotating}
+;; \\usepackage[normalem]{ulem}
+;; \\usepackage{amsmath}
+;; \\usepackage{textcomp}
+;; \\usepackage{marvosym}
+;; \\usepackage{wasysym}
+;; \\usepackage{amssymb}
+;; \\usepackage{hyperref}
+;; \\usepackage{mathpazo}
+;; \\usepackage{color}
+;; \\usepackage{enumerate}
+;; \\definecolor{bg}{rgb}{0.95,0.95,0.95}
+;; \\tolerance=1000
+;;       [NO-DEFAULT-PACKAGES]
+;;       [PACKAGES]
+;;       [EXTRA]
+;; \\linespread{1.1}
+;; \\hypersetup{pdfborder=0 0 0}"
+;;                  ("\\section{%s}" . "\\section*{%s}")
+;;                  ("\\subsection{%s}" . "\\subsection*{%s}")
+;;                  ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+;;                  ("\\paragraph{%s}" . "\\paragraph*{%s}"))))
+#+end_src
+
+#+RESULTS:
+#+begin_example
+(article \documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fixltx2e}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{marvosym}
+\usepackage{wasysym}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{mathpazo}
+\usepackage{color}
+\usepackage{enumerate}
+\definecolor{bg}{rgb}{0.95,0.95,0.95}
+\tolerance=1000
+      [NO-DEFAULT-PACKAGES]
+      [PACKAGES]
+      [EXTRA]
+\linespread{1.1}
+\hypersetup{pdfborder=0 0 0} (\section{%s} . \section*{%s}) (\subsection{%s} . \subsection*{%s}) (\subsubsection{%s} . \subsubsection*{%s}) (\paragraph{%s} . \paragraph*{%s}))
+#+end_example
+
 *** Visuals
 #+begin_src emacs-lisp
 (after! org-superstar
@@ -789,7 +893,7 @@ The window scope is determined by `avy-all-windows' (ARG negates it)."
 (after! avy
   (setq avy-single-candidate-jump t)
   (map! :n "M-f" 'tot/avy-goto-char-timer)
-  (setq avy-timeout-seconds 0.35))
+  (setq avy-timeout-seconds 0.3))
 #+end_src
 
 ** Elfeed
@@ -852,15 +956,20 @@ Scuffed way to create java projects
 #+end_src
 ** Centaur tabs
 #+begin_src emacs-lisp
-(use-package centaur-tabs
-  :config
-  (setq
-   ;;centaur-tabs-style "rounded"
-        ;; centaur-tabs-height "24"
-        centaur-tabs-set-close-button nil
-        centaur-tabs-set-modified-marker t)
-  :hook
-  (dired-mode . centaur-tabs-local-mode))
+(when (featurep! centaur-tabs)
+  (use-package centaur-tabs
+    :config
+    (setq
+     ;;centaur-tabs-style "rounded"
+     ;; centaur-tabs-height "24"
+     centaur-tabs-set-close-button nil
+     centaur-tabs-set-modified-marker t)
+    :hook
+    (dired-mode . centaur-tabs-local-mode)))
+#+end_src
+** Clojure
+#+begin_src emacs-lisp
+(add-to-list 'auto-mode-alist '("\\.cljs\\.hl\\'" . clojurescript-mode))
 #+end_src
 * Hooks
 #+begin_src emacs-lisp
@@ -874,20 +983,25 @@ Scuffed way to create java projects
                mu4e-compose-mode-hook
                message-mode-hook
                git-commit-mode-hook)
-             ;; #'flyspell-mode
+             #'flyspell-mode
              )
 #+end_src
 
 Disable =ivy-posframe-mode= when frame is too small
 
 #+begin_src emacs-lisp
-(defun tot/ivy-posframe-if-frame-size (&rest _)
-  "Function for `window-size-change-functions`."
-  (if (and
-       (> (frame-width) ivy-posframe-width)
-       (> (frame-height) ivy-posframe-height))
-      (ivy-posframe-mode 1)
-    (ivy-posframe-mode 0)))
+(after! (ivy counsel ivy-posframe)
+  (setq ivy-posframe-width 110
+        ivy-posframe-height 40)
 
-(add-hook 'window-size-change-functions 'tot/ivy-posframe-if-frame-size)
+  (defun tot/ivy-posframe-if-frame-size (&rest _)
+    "Function for `window-size-change-functions`."
+    (if (and (> (frame-width) ivy-posframe-width)
+             (> (frame-height) ivy-posframe-height))
+        (ivy-posframe-mode 1)
+      (ivy-posframe-mode 0)))
+
+  (add-hook 'window-size-change-functions 'tot/ivy-posframe-if-frame-size)
+  ;;(setq ivy-posframe-parameters '((parent-frame nil)))
+  )
 #+end_src

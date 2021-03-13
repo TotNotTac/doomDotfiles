@@ -48,7 +48,7 @@
         +all
         +defaults)                              ; tame sudden yet inevitable temporary windows
        ;; (ligatures +fira)
-       tabs                                  ; an tab bar for Emacs
+       ;; tabs                                  ; an tab bar for Emacs
        neotree                                  ; a project drawer, like NERDTree for vim
        ;; treemacs                              ; a project drawer, like neotree but cooler
        unicode                                  ; extended unicode support for various languages
@@ -89,8 +89,8 @@
 
        :checkers
        syntax                                   ; tasing you for every semicolon you forget
-       ;; spell                                 ; tasing you for misspelling mispelling
-       grammar                                  ; tasing grammar mistake every you make
+       (spell +flyspell)                                 ; tasing you for misspelling mispelling
+       ;; grammar                                  ; tasing grammar mistake every you make
 
        :tools
        ;;ansible

@@ -47,7 +47,7 @@
 ;(package! builtin-package :recipe (:branch "develop"))
 (package! color-theme-sanityinc-tomorrow :recipe (:host github :repo "purcell/color-theme-sanityinc-tomorrow"))
 ;; (package! org-sidebar :recipe (:host github :repo "alphapapa/org-sidebar"))
-(package! demo-it)
+;; (package! demo-it)
 (package! ivy-posframe :recipe (:host github :repo "tumashu/ivy-posframe"))
 (package! eaf :recipe (:host github :repo "manateelazycat/emacs-application-framework"
                        :files ("*.el" "app" "core" "*.py")))
@@ -78,3 +78,8 @@
 ;; (package! company-tabnine :recipe (:host github :repo "TommyX12/company-tabnine"
 ;;                                    :files ("*.el" "*.sh")))
 (package! aggressive-indent :recipe (:host github :repo "Malabarba/aggressive-indent-mode"))
+(package! lsp-java :recipe (:host github :repo "emacs-lsp/lsp-java"))
+(package! dap-mode)
+(package! emacs-everywhere :recipe (:host github :repo "tecosaur/emacs-everywhere"))
+(package! autothemer :recipe (:host github :repo "jasonm23/autothemer"))
+(package! rose-pine-emacs :recipe (:host github :repo "caelie/rose-pine-emacs"))
