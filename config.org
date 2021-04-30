@@ -7,12 +7,12 @@
 #+end_src
 * Doom related
 #+begin_src emacs-lisp
-(setq doom-font (font-spec :family "monospace" :size 14))
+(setq doom-font (font-spec :family "Hack" :size 16))
 
-(defvar doom-theme-light 'tsdgh-light)
-(defvar doom-theme-dark 'sanityinc-tomorrow-bright)
+(setq doom-theme-light 'doom-vibrant)
+(setq doom-theme-dark 'doom-monokai-pro)
 
-(setq doom-theme doom-theme-dark)
+(setq doom-theme doom-theme-light)
 
 (setq org-directory "~/org/")
 (setq display-line-numbers-type 'relative)
@@ -20,7 +20,7 @@
 (setq doom-leader-alt-key "M-SPC")
 
 (setq doom-fallback-buffer-name "► Doom"
-      +doom-dashboard-name "► Doom")
+      +doom-dashboard-name "► Dashboard")
 #+end_src
 
 Unbind `C-z` to stop accidentally turning on Emacs state all the time
@@ -77,8 +77,7 @@ Sql settings
   (interactive)
   (if (eq doom-theme doom-theme-dark)
       (setq doom-theme doom-theme-light)
-    (setq doom-theme doom-theme-dark)
-      )
+    (setq doom-theme doom-theme-dark))
   (doom/reload-theme))
 
 
@@ -87,10 +86,10 @@ Sql settings
   (search-forward-regexp "[\"\)']"))
 
 
-(defun tot/save-and-kill-buffer ()
+(defun tot/save-and-kill-buffer (&optional arg)
   "Save a buffer before killing"
-  (interactive)
-  (unless (string-match-p ".*\\*.*\\*.*" (buffer-name))
+  (interactive "P")
+  (unless (or (string-match-p ".*\\*.*\\*.*" (buffer-name)) arg)
     (save-buffer))
   (kill-buffer))
 
@@ -103,11 +102,11 @@ Sql settings
 (defun tot/window-split-smart ()
   "Splits window into two. It'll split so the difference between the height and the width of a window is as small as possible"
   (interactive)
-  (if (> (window-pixel-height) (window-pixel-width))
+  (if (>= (window-pixel-height) (window-pixel-width))
       ;; then
       (split-window-below)
     ;; else
-    (+evil-window-vsplit-a)))
+    (split-window-right)))
 
 ;; SX mode
 (defun tot/sx/display-question ()
@@ -365,18 +364,26 @@ Windows hydra
 #+end_src
 ** Ivy-posframe
 #+begin_src emacs-lisp
-(ivy-posframe-enable)
+(after! 'ivy
+  (setq
+   ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center))
+   ivy-posframe-height 30
+   ivy-posframe-width 110
+   ivy-posframe-border-width 1)
 
-(setq
- ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center))
- ivy-posframe-height 30
- ivy-posframe-width 110
- ivy-posframe-border-width 1)
+  ;; (set-face-attribute 'ivy-posframe-border nil :background "#ffffff")
+  ;; (set-face-attribute 'ivy-posframe-border nil :inherit 'unspecified)
+  ;; (set-face-attribute 'ivy-posframe-border nil :internal-border-width 1)
 
-;; (set-face-attribute 'ivy-posframe-border nil :background "#ffffff")
-;; (set-face-attribute 'ivy-posframe-border nil :inherit 'unspecified)
-;; (set-face-attribute 'ivy-posframe-border nil :internal-border-width 1)
-(set-face-attribute 'internal-border nil :background "steel blue")
+  (set-face-attribute 'internal-border nil :background "steel blue")
+  (ivy-posframe-mode 1))
+#+end_src
+** Projects
+#+begin_src emacs-lisp
+(use-package projectile
+  :config
+  (setq projectile-project-search-path '("~/proj")
+        projectile-require-project-root nil))
 #+end_src
 ** Pretty symbols
 #+begin_src emacs-lisp
@@ -420,13 +427,13 @@ Windows hydra
 #+end_src
 ** CalFW
 #+begin_src emacs-lisp
-(after! (org org-agenda)
-  (map!
-   (:leader
-    "o c" #'cfw:open-org-calendar)
-   (:map (cfw:calendar-mode-map cfw:org-custom-map cfw:org-schedule-map)
-    "SPC" nil
-    "q" #'kill-current-buffer)))
+;; (after! (org org-agenda)
+;;   (map!
+;;    (:leader
+;;     "o c" #'cfw:open-org-calendar)
+;;    (:map (cfw:calendar-mode-map cfw:org-custom-map cfw:org-schedule-map)
+;;     "SPC" nil
+;;     "q" #'kill-current-buffer)))
 #+end_src
 ** Eshell
 Fix Eshell company lags
@@ -464,6 +471,11 @@ Fix Eshell company lags
   (add-to-list 'forge-alist
                '("gitlab.fdmci.hva.nl" "gitlab.fdmci.hva.nl/api/v4" "gitlab.fdmci.hva.nl" forge-gitlab-repository)))
 #+end_src
+
+#+begin_src emacs-lisp
+(setq magit-repository-directories `(("~/repos/" . 1)
+                                     ("~/proj/" . 1)))
+#+end_src
 ** Org
 
 #+begin_src emacs-lisp
@@ -476,11 +488,141 @@ Fix Eshell company lags
           org-image-actual-width '(500)
           org-startup-with-inline-images t)))
 #+end_src
+
+*** Presentations
+#+begin_src emacs-lisp
+(defun dw/org-start-presentation ()
+  (interactive)
+  (org-tree-slide-mode 1)
+  (setq text-scale-mode-amount 3)
+  (text-scale-mode 1)
+  (setq display-line-numbers nil))
+
+(defun dw/org-end-presentation ()
+  (interactive)
+  (text-scale-mode 0)
+  (org-tree-slide-mode 0)
+  ;; (setq display-line-numbers )
+  )
+
+(use-package org-tree-slide
+  :defer t
+  :after org
+  :commands org-tree-slide-mode
+  :config
+  (evil-define-key 'normal org-tree-slide-mode-map
+    (kbd "q") 'dw/org-end-presentation
+    (kbd "C-j") 'org-tree-slide-move-next-tree
+    (kbd "C-k") 'org-tree-slide-move-previous-tree)
+  (setq org-tree-slide-slide-in-effect nil
+        org-tree-slide-activate-message "Presentation started."
+        org-tree-slide-deactivate-message "Presentation ended."
+        org-tree-slide-header t
+        org-tree-slide-never-touch-face nil
+        org-tree-slide-breadcrumbs " // "
+        ))
+
+(map! :after org
+      :map org-mode-map
+      :leader "tp" #'dw/org-start-presentation)
+#+end_src
+
+*** LaTeX
+#+begin_src emacs-lisp
+;; (after! org
+;;   (setq org-latex-classes '("article"
+;;                  "\\documentclass[11pt,a4paper]{article}
+;; \\usepackage[utf8]{inputenc}
+;; \\usepackage[T1]{fontenc}
+;; \\usepackage{fixltx2e}
+;; \\usepackage{graphicx}
+;; \\usepackage{longtable}
+;; \\usepackage{float}
+;; \\usepackage{wrapfig}
+;; \\usepackage{rotating}
+;; \\usepackage[normalem]{ulem}
+;; \\usepackage{amsmath}
+;; \\usepackage{textcomp}
+;; \\usepackage{marvosym}
+;; \\usepackage{wasysym}
+;; \\usepackage{amssymb}
+;; \\usepackage{hyperref}
+;; \\usepackage{mathpazo}
+;; \\usepackage{color}
+;; \\usepackage{enumerate}
+;; \\definecolor{bg}{rgb}{0.95,0.95,0.95}
+;; \\tolerance=1000
+;;       [NO-DEFAULT-PACKAGES]
+;;       [PACKAGES]
+;;       [EXTRA]
+;; \\linespread{1.1}
+;; \\hypersetup{pdfborder=0 0 0}"
+;;                  ("\\section{%s}" . "\\section*{%s}")
+;;                  ("\\subsection{%s}" . "\\subsection*{%s}")
+;;                  ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+;;                  ("\\paragraph{%s}" . "\\paragraph*{%s}"))))
+#+end_src
+
+#+RESULTS:
+#+begin_example
+(article \documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fixltx2e}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{marvosym}
+\usepackage{wasysym}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{mathpazo}
+\usepackage{color}
+\usepackage{enumerate}
+\definecolor{bg}{rgb}{0.95,0.95,0.95}
+\tolerance=1000
+      [NO-DEFAULT-PACKAGES]
+      [PACKAGES]
+      [EXTRA]
+\linespread{1.1}
+\hypersetup{pdfborder=0 0 0} (\section{%s} . \section*{%s}) (\subsection{%s} . \subsection*{%s}) (\subsubsection{%s} . \subsubsection*{%s}) (\paragraph{%s} . \paragraph*{%s}))
+#+end_example
+
+*** Visuals
+#+begin_src emacs-lisp
+(after! org-superstar
+  (setq org-superstar-headline-bullets-list '("◉" "○" "✸" "✿" "✤" "✜" "◆" "▶")
+        org-superstar-prettify-item-bullets t ))
+#+end_src
+
+Nicer folding character
+#+begin_src emacs-lisp
+(after! org
+  (setq org-ellipsis " ▾ "
+        org-hide-leading-stars t
+        org-priority-highest ?A
+        org-priority-lowest ?E
+        org-priority-faces
+        '((?A . 'all-the-icons-red)
+          (?B . 'all-the-icons-orange)
+          (?C . 'all-the-icons-yellow)
+          (?D . 'all-the-icons-green)
+          (?E . 'all-the-icons-blue))))
+#+end_src
 *** Todo's
 #+begin_src emacs-lisp
 (setq org-agenda-sorting-strategy '(todo-state-up priority-down))
 #+end_src
-
+*** Contacts
+#+begin_src emacs-lisp
+(after! org
+  (setq org-contacts-files '("/home/silas/org/contacts.org")))
+#+end_src
 *** Capture
 **** Create capture frame
 Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. Curse you synchronous programming!
@@ -493,15 +635,15 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
 
 **** Templates
 #+begin_src emacs-lisp
-(after! org-capture (setq org-capture-templates
+(after! org-capture
+  (load "~/.doom.d/org-imdb/org-imdb.el")
+
+  (setq org-capture-templates
         (doct '(("Todo" :keys "t"
                  :file "~/org/todo.org"
                  :prepend t
                  :headline "Inbox"
                  :template ("* TODO %^{Description} %^G"
-                            ":PROPERTIES:"
-                            ":CREATED: %U"
-                            ":END:"
                             "%?"))
                 ("Agenda" :keys "a"
                  :file "~/org/todo.org"
@@ -515,6 +657,11 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
                  :headline "Watchlist"
                  :immediate-finish t
                  :template ("* [ ] %^{Title}"))
+                ("Watchlist with IMDB" :keys "W"
+                 :file "~/org/watchlist.org"
+                 :headline "Watchlist"
+                 :immediate-finish t
+                 :template ("* [ ] %(org-imdb-capture-title)"))
                 ("Diary entry" :keys "d"
                  :file "~/org/diary.org"
                  :prepend t
@@ -527,7 +674,50 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
 #+end_src
 *** Alerts
 #+begin_src emacs-lisp
-(setq alert-default-style 'libnotify)
+(require 'org-alert)
+
+(org-alert-enable)
+(setq alert-default-style 'notifications)
+#+end_src
+*** Super agenda
+#+begin_src emacs-lisp
+;; (after! org
+;;   (require 'org-super-agenda)
+
+;; (setq org-agenda-skip-scheduled-if-done t
+;;       org-agenda-skip-deadline-if-done t
+;;       org-agenda-include-deadlines t
+;;       org-agenda-block-separator nil
+;;       org-agenda-tags-column 80 ;; from testing this seems to be a good value
+;;       org-agenda-compact-blocks t)
+
+;; (setq org-agenda-custom-commands
+;;  '(("o" "overview"
+;;     ((agenda "" ((org-agenda-span 'day)
+;;                  (org-super-agenda-groups
+;;                   '((:name "Today"
+;;                      :time-grid t
+;;                      :date today
+;;                      :todo "TODAY"
+;;                      :order 1)
+;;                     ))))
+;;      (alltodo "" ((org-agenda-overriding-header "")
+;;                   (org-super-agenda-groups
+;;                    '(
+;;                      (:name "Today"
+;;                       :date today)
+;;                      (:name "Due soon"
+;;                       :deadline future)
+;;                      (:name "Schedule"
+;;                       :date t)
+;;                      (:name "Todo's"
+;;                       :todo ("START" "TODO"))
+;;                      (:name "Projects"
+;;                       :todo "PROJ")
+;;                      (:discard (:anything))))))))))
+
+;;   (org-super-agenda-mode)
+;;   )
 #+end_src
 ** W3M
 #+begin_src emacs-lisp
@@ -571,7 +761,7 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
 #+end_src
 ** Dired
 #+begin_src emacs-lisp
-(add-hook 'ranger-mode-hook 'dired-filter-mode)
+;; (add-hook 'ranger-mode-hook 'dired-filter-mode)
 #+end_src
 ** Emacs Application Framework
 #+begin_src emacs-lisp
@@ -701,8 +891,9 @@ The window scope is determined by `avy-all-windows' (ARG negates it)."
       (length avy--old-cands))))
 
 (after! avy
+  (setq avy-single-candidate-jump t)
   (map! :n "M-f" 'tot/avy-goto-char-timer)
-  (setq avy-timeout-seconds 0.35))
+  (setq avy-timeout-seconds 0.3))
 #+end_src
 
 ** Elfeed
@@ -725,9 +916,13 @@ The window scope is determined by `avy-all-windows' (ARG negates it)."
 #+end_src
 ** Java
 #+begin_src emacs-lisp
-(after! 'meghanda
-  (map! :map meghanada-mode-map
-        :localleader "c" 'meghanada-exec-main))
+(setenv "JAVA_HOME"  "/usr/lib/jvm/default")
+(setq lsp-java-java-path "/usr/lib/jvm/default/bin/java")
+#+end_src
+#+begin_src emacs-lisp
+;; (after! 'meghanda
+;;   (map! :map meghanada-mode-map
+;;         :localleader "c" 'meghanada-exec-main))
 #+end_src
 
 Scuffed way to create java projects
@@ -754,10 +949,32 @@ Scuffed way to create java projects
   (map! :map lsp-ui-mode-map
         :n "RET" 'lsp-ui-sideline-apply-code-actions))
 #+end_src
+** aggressive indent
+#+begin_src emacs-lisp
+(add-hook 'lispy-mode-hook #'aggressive-indent-mode)
+(add-hook 'css-mode-hook #'aggressive-indent-mode)
+#+end_src
+** Centaur tabs
+#+begin_src emacs-lisp
+(when (featurep! centaur-tabs)
+  (use-package centaur-tabs
+    :config
+    (setq
+     ;;centaur-tabs-style "rounded"
+     ;; centaur-tabs-height "24"
+     centaur-tabs-set-close-button nil
+     centaur-tabs-set-modified-marker t)
+    :hook
+    (dired-mode . centaur-tabs-local-mode)))
+#+end_src
+** Clojure
+#+begin_src emacs-lisp
+(add-to-list 'auto-mode-alist '("\\.cljs\\.hl\\'" . clojurescript-mode))
+#+end_src
 * Hooks
 #+begin_src emacs-lisp
 (add-hook 'delete-frame-hook '+workspace/delete)
-(add-hook 'emacs-startup-hook 'org-agenda-list)
+;;(add-hook 'emacs-startup-hook 'org-agenda-list)
 
 (remove-hook! '(org-mode-hook
                markdown-mode-hook
@@ -766,20 +983,25 @@ Scuffed way to create java projects
                mu4e-compose-mode-hook
                message-mode-hook
                git-commit-mode-hook)
-             ;; #'flyspell-mode
+             #'flyspell-mode
              )
 #+end_src
 
 Disable =ivy-posframe-mode= when frame is too small
 
 #+begin_src emacs-lisp
-(defun tot/ivy-posframe-if-frame-size (&rest _)
-  "Function for `window-size-change-functions`."
-  (if (and
-       (> (frame-width) ivy-posframe-width)
-       (> (frame-height) ivy-posframe-height))
-      (ivy-posframe-mode 1)
-    (ivy-posframe-mode 0)))
+(after! (ivy counsel ivy-posframe)
+  (setq ivy-posframe-width 110
+        ivy-posframe-height 40)
 
-(add-hook 'window-size-change-functions 'tot/ivy-posframe-if-frame-size)
+  (defun tot/ivy-posframe-if-frame-size (&rest _)
+    "Function for `window-size-change-functions`."
+    (if (and (> (frame-width) ivy-posframe-width)
+             (> (frame-height) ivy-posframe-height))
+        (ivy-posframe-mode 1)
+      (ivy-posframe-mode 0)))
+
+  (add-hook 'window-size-change-functions 'tot/ivy-posframe-if-frame-size)
+  ;;(setq ivy-posframe-parameters '((parent-frame nil)))
+  )
 #+end_src

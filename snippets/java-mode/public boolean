@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: public boolean
+# key: pb
+# --
+public boolean $0
