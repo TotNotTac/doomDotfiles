@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: checking
+# key: checking
+# condition: t
+# --
+assets:bank:checking

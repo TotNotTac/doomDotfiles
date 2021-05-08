@@ -971,6 +971,36 @@ Scuffed way to create java projects
 #+begin_src emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.cljs\\.hl\\'" . clojurescript-mode))
 #+end_src
+** Hledger
+#+begin_src emacs-lisp
+
+(defun my/hledger-new-entry ()
+  (interactive)
+  (hledger-jentry)
+  (insert (org-read-date) " ")
+  (evil-insert-state))
+
+(defun my/hledger-delete-transaction () ;; TODO
+  (interactive)
+  (mark-paragraph)
+  (kill-region)
+  (kill-line))
+
+(use-package! hledger-mode
+  :config
+  (setq hledger-jfile (expand-file-name
+                       "~/finance/2021.journal")
+        hledger-show-expanded-report nil)
+  (map! :map hledger-mode-map
+        "C-j"                            #'hledger-forward-entry
+        "C-k"                            #'hledger-backward-entry
+        "M-k" :desc "increase amount"    #'hledger-increment-amount
+        "M-j" :desc "decrease amount"    (cmd! (hledger-increment-amount -1))
+        :localleader
+        "vr"  :desc   "view next report" #'hledger-next-report
+        "vo"  :desc "view overal report" #'hledger-overall-report
+        "a"   :desc    "add a new entry" #'my/hledger-new-entry))
+#+end_src
 * Hooks
 #+begin_src emacs-lisp
 (add-hook 'delete-frame-hook '+workspace/delete)
