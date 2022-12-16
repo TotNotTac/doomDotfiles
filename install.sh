@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 error=0
 doomCommit=1456108d5bef89195b2b63f962e0ae9d24f4c652

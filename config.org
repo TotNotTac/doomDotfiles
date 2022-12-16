@@ -7,10 +7,13 @@
 #+end_src
 * Doom related
 #+begin_src emacs-lisp
-(setq doom-font (font-spec :family "Hack" :size 16))
+(setq doom-font (font-spec :family "Fira Code Nerd Font" :size 12))
 
-(setq doom-theme-light 'doom-vibrant)
-(setq doom-theme-dark 'doom-monokai-pro)
+(fringe-mode 0)
+(setq-default line-spacing 1)
+
+(setq doom-theme-light 'leuven)
+(setq doom-theme-dark 'doom-monokai-spectrum)
 
 (setq doom-theme doom-theme-light)
 
@@ -23,34 +26,11 @@
       +doom-dashboard-name "► Dashboard")
 #+end_src
 
-Unbind `C-z` to stop accidentally turning on Emacs state all the time
-#+begin_src emacs-lisp
-;; (map! :nvi "C-z" 'nonexistentfunction)
-#+end_src
-
-** TODO Evil in the minibuffer
-#+begin_src emacs-lisp
-;; (setq evil-want-minibuffer t)
-#+end_src
-
-Fix not being able to scroll with `C-j` and `C-k`
-#+begin_src emacs-lisp
-;; (map! :map minibuffer-local-map
-;;       :n "C-j" 'next-line
-;;       :n "C-k" 'previous-line)
-#+end_src
-
-* Package loading
-Get your emacs themes on the terminal
-#+begin_src emacs-lisp
-;; (package! theme-magic)
-#+end_src
-
 * Personal
 ** Variables
 #+begin_src emacs-lisp
 (setq evil-escape-key-sequence nil
-      treemacs-position 'right
+      treemacs-position 'left
       neo-window-position 'left
       neo-window-width 30)
 #+end_src
@@ -71,15 +51,20 @@ Sql settings
 (setq sql-mysql-options '("-s" "--protocol" "tcp" "-P" "3306"))
 (add-hook 'sql-interactive-mode-hook 'yas-minor-mode-on)
 #+end_src
+
+(un)safe local variables
+#+begin_src emacs-lisp
+(defun risky-local-variable-p (sym &optional _ignored) nil)
+#+end_src
 ** Functions
 #+begin_src emacs-lisp
+;; TODO Fix this function
 (defun tot/theme-toggle ()
   (interactive)
   (if (eq doom-theme doom-theme-dark)
       (setq doom-theme doom-theme-light)
     (setq doom-theme doom-theme-dark))
   (doom/reload-theme))
-
 
 (defun tot/break-out-string-or-parens ()
   (interactive)
@@ -102,11 +87,12 @@ Sql settings
 (defun tot/window-split-smart ()
   "Splits window into two. It'll split so the difference between the height and the width of a window is as small as possible"
   (interactive)
-  (if (>= (window-pixel-height) (window-pixel-width))
-      ;; then
-      (split-window-below)
-    ;; else
-    (split-window-right)))
+  (let ((evil-vsplit-window-right t))
+    (if (>= (window-pixel-height) (window-pixel-width))
+        ;; then
+        (+evil/window-split-and-follow)
+      ;; else
+      (evil-window-vsplit))))
 
 ;; SX mode
 (defun tot/sx/display-question ()
@@ -251,8 +237,7 @@ If the you select `hi' then you get the message `Hi'
   "M-h" #'org-agenda-earlier)
 
  (:map yas-minor-mode-map
-  :i
-  "C-SPC" #'yas-expand)
+  "C-SPC" #'yas-maybe-expand)
 
  (:map ranger-mode-map
   "M-1" 'winum-select-window-1
@@ -275,7 +260,7 @@ If the you select `hi' then you get the message `Hi'
  "M-7" 'winum-select-window-7
  "M-8" 'winum-select-window-8
  "M-9" 'winum-select-window-9
- "M-0" #'tot/neotree-toggle-function
+ ;; "M-0" #'tot/neotree-toggle-function
 
  (:leader ;; Backup keybindings for in terminal mode
   "1" 'winum-select-window-1
@@ -303,7 +288,7 @@ If the you select `hi' then you get the message `Hi'
  (:leader
   "b c" #'tot/save-and-kill-buffer
   "/" #'swiper
-  "?" #'+ivy/project-search
+  "?" #'+default/search-project
   "s s" #'tot/sx/search-stackoverflow)
 
  :v
@@ -357,68 +342,57 @@ Windows hydra
 #+end_src
 
 * Packages
+** persp-mode
+#+begin_src emacs-lisp
+(after! persp-mode
+  (setq persp-emacsclient-init-frame-behaviour-override "main"))
+#+end_src
 ** Winum
 #+begin_src emacs-lisp
 (after! 'winum
   (setq winum-scope 'visible))
 #+end_src
-** Ivy-posframe
-#+begin_src emacs-lisp
-(after! 'ivy
-  (setq
-   ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center))
-   ivy-posframe-height 30
-   ivy-posframe-width 110
-   ivy-posframe-border-width 1)
-
-  ;; (set-face-attribute 'ivy-posframe-border nil :background "#ffffff")
-  ;; (set-face-attribute 'ivy-posframe-border nil :inherit 'unspecified)
-  ;; (set-face-attribute 'ivy-posframe-border nil :internal-border-width 1)
-
-  (set-face-attribute 'internal-border nil :background "steel blue")
-  (ivy-posframe-mode 1))
-#+end_src
 ** Projects
 #+begin_src emacs-lisp
-(use-package projectile
+(use-package! projectile
   :config
-  (setq projectile-project-search-path '("~/proj")
+  (setq projectile-project-search-path '("~/proj" "~/repos")
         projectile-require-project-root nil))
 #+end_src
 ** Pretty symbols
 #+begin_src emacs-lisp
-;; (when (featurep! :ui pretty-code)
-;;   (setq +pretty-code-symbols '(:name "»"
-;;                                :src_block "»"
-;;                                :src_block_end "«"
-;;                                :quote "“"
-;;                                :quote_end "”"
-;;                                :lambda "λ"
-;;                                :def "ƒ"
-;;                                :defun "ƒ"
-;;                                :composition "∘"
-;;                                :map "↦"
-;;                                :null "∅"
-;;                                :not "￢"
-;;                                :and "∧"
-;;                                :or "∨"
-;;                                :for "∀"
-;;                                :some "∃"
-;;                                :tuple "⨂"
-;;                                :dot "•"
-;;                                :begin_quote   "❮"
-;;                                :end_quote     "❯"
-;;                                :begin_export  "⯮"
-;;                                :end_export    "⯬"
-;;                                :priority_a   "⬆"
-;;                                :priority_b   "■"
-;;                                :priority_c   "⬇"
-;;                                :em_dash       "—"
-;;                                :property      "☸"
-;;                                :properties    "⚙"
-;;                                :checkbox      "☐"
-;;                                :checkedbox    "☑"
-;;                                )))
+(when (featurep! :ui pretty-code)
+  (setq +pretty-code-symbols '(;; :name "»"
+                               ;; :src_block "»"
+                               ;; :src_block_end "«"
+                               ;; :quote "“"
+                               ;; :quote_end "”"
+                               ;; :lambda "λ"
+                               ;; :def "ƒ"
+                               ;; :defun "ƒ"
+                               ;; :composition "∘"
+                               ;; :map "↦"
+                               ;; :null "∅"
+                               ;; :not "￢"
+                               ;; :and "∧"
+                               ;; :or "∨"
+                               ;; :for "∀"
+                               ;; :some "∃"
+                               ;; :tuple "⨂"
+                               ;; :dot "•"
+                               ;; :begin_quote   "❮"
+                               ;; :end_quote     "❯"
+                               ;; :begin_export  "⯮"
+                               ;; :end_export    "⯬"
+                               :priority_a   "⬆"
+                               :priority_b   "■"
+                               :priority_c   "⬇"
+                               ;; :em_dash       "—"
+                               :property      "☸"
+                               :properties    "⚙"
+                               ;; :checkbox      "☐"
+                               ;; :checkedbox    "☑"
+                               )))
 #+end_src
 
 ** Calc
@@ -469,12 +443,41 @@ Fix Eshell company lags
 #+begin_src emacs-lisp
 (after! forge
   (add-to-list 'forge-alist
-               '("gitlab.fdmci.hva.nl" "gitlab.fdmci.hva.nl/api/v4" "gitlab.fdmci.hva.nl" forge-gitlab-repository)))
+               '("gitlab.fdmci.hva.nl" "gitlab.fdmci.hva.nl/api/v4" "gitlab.fdmci.hva.nl" forge-gitlab-repository))
+
+  (setq magit-repository-directories `(("~/repos/" . 1)
+                                       ("~/proj/" . 1)))
+
+  (add-hook 'focus-in-hook 'magit-refresh-all)
+
+  ;; Add transient key to show issues currently assigned to myself
+  (transient-replace-suffix 'forge-dispatch "m i" '(2 "m i" "Your issues" forge-list-assigned-issues))
+
+
+  ;; For some godforsaken reason I have to manually revert some diff that was mentioned in an issue that they never fixed
+  ;; https://github.com/magit/ghub/issues/155
+  (defun ghub--url-encode-params (params)
+    (mapconcat (lambda (param)
+                 (pcase-let ((`(,key . ,val) param))
+                   (concat (url-hexify-string (symbol-name key)) "="
+                           (if (integerp val)
+                               (number-to-string val)
+                             (url-hexify-string val)))))
+               params "&")))
 #+end_src
 
+Add some logical keybindings to smerge mode
+
 #+begin_src emacs-lisp
-(setq magit-repository-directories `(("~/repos/" . 1)
-                                     ("~/proj/" . 1)))
+;; (map! :map smerge-mode-map
+;;       :localleader
+;;       :n
+;;       "n" #'smerge-next
+;;       "p" #'smerge-prev
+;;       :prefix ("k" . "keep")
+;;       "k" #'smerge-keep-current
+;;       "u" #'smerge-keep-upper
+;;       "l" #'smerge-keep-lower)
 #+end_src
 ** Org
 
@@ -487,6 +490,63 @@ Fix Eshell company lags
           org-agenda-inhibit-startup nil
           org-image-actual-width '(500)
           org-startup-with-inline-images t)))
+#+end_src
+
+To insert images in org mode from the clipboard
+#+begin_src emacs-lisp
+(setq-default org-download-image-dir "~/org/attachments")
+#+end_src
+
+*** org-roam :ATTACH:
+:PROPERTIES:
+:ID:       14fccfff-b7be-4cd1-a3fd-7f2b890d26ca
+:END:
+#+begin_src emacs-lisp
+(when (featurep! :lang org)
+  (after! org
+    (setq org-roam-directory (expand-file-name "~/org"))
+    (setq org-agenda-files '("~/org"))
+    (push "~/org/daily" org-agenda-files)
+
+    (map! :leader "'" #'org-roam-node-find)
+    ))
+#+end_src
+
+
+
+[[attachment:_20220524_235322screenshot.png]]
+#+begin_src emacs-lisp
+(defadvice! yeet/org-roam-in-own-workspace-a (&rest _)
+  "Open all roam buffers in there own workspace."
+  :before #'org-roam-node-find
+  :before #'org-roam-node-random
+  :before #'org-roam-buffer-display-dedicated
+  :before #'org-roam-buffer-toggle
+  (when (featurep! :ui workspaces)
+    (+workspace-switch "*roam*" t)))
+#+end_src
+**** org-roam-ui
+#+begin_src emacs-lisp
+(use-package! websocket
+  :after org-roam)
+
+(use-package! org-roam-ui
+  :after org ;; or :after org
+  ;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+  ;;         a hookable mode anymore, you're advised to pick something yourself
+  ;;         if you don't care about startup time, use
+  ;;  :hook (after-init . org-roam-ui-mode)
+  :config
+  (setq org-roam-ui-sync-theme t
+        org-roam-ui-follow t
+        org-roam-ui-update-on-save t
+        org-roam-ui-open-on-start t))
+
+(after! org-roam-ui
+  (org-roam-ui-follow-mode)
+  (map! :leader "n r g" #'org-roam-ui-open
+        :mode org-mode
+        :localleader "m g" #'org-roam-ui-open))
 #+end_src
 
 *** Presentations
@@ -593,26 +653,42 @@ Fix Eshell company lags
 \hypersetup{pdfborder=0 0 0} (\section{%s} . \section*{%s}) (\subsection{%s} . \subsection*{%s}) (\subsubsection{%s} . \subsubsection*{%s}) (\paragraph{%s} . \paragraph*{%s}))
 #+end_example
 
+
+Load org-fragtog for live Latex previews
+#+begin_src emacs-lisp
+(add-hook 'org-mode-hook 'org-fragtog-mode)
+#+end_src
+
+Load org-modern for nice looking org documents
+#+begin_src emacs-lisp
+;; (add-hook 'org-mode-hook #'org-modern-mode)
+#+end_src
+
 *** Visuals
 #+begin_src emacs-lisp
-(after! org-superstar
-  (setq org-superstar-headline-bullets-list '("◉" "○" "✸" "✿" "✤" "✜" "◆" "▶")
-        org-superstar-prettify-item-bullets t ))
+;; (after! org-superstar
+;;   (setq org-superstar-headline-bullets-list '("◉" "○" "✸" "✿" "✤" "✜" "◆" "▶")
+;;         org-superstar-prettify-item-bullets t ))
 #+end_src
 
 Nicer folding character
 #+begin_src emacs-lisp
+;; (after! org
+;;   (setq org-ellipsis " ▾ "
+;;         org-hide-leading-stars t
+;;         org-priority-highest ?A
+;;         org-priority-lowest ?E
+;;         org-priority-faces
+;;         '((?A . 'all-the-icons-red)
+;;           (?B . 'all-the-icons-orange)
+;;           (?C . 'all-the-icons-yellow)
+;;           (?D . 'all-the-icons-green)
+;;           (?E . 'all-the-icons-blue))))
+#+end_src
+
+#+begin_src emacs-lisp
 (after! org
-  (setq org-ellipsis " ▾ "
-        org-hide-leading-stars t
-        org-priority-highest ?A
-        org-priority-lowest ?E
-        org-priority-faces
-        '((?A . 'all-the-icons-red)
-          (?B . 'all-the-icons-orange)
-          (?C . 'all-the-icons-yellow)
-          (?D . 'all-the-icons-green)
-          (?E . 'all-the-icons-blue))))
+  (add-hook 'org-mode-hook 'org-modern-mode))
 #+end_src
 *** Todo's
 #+begin_src emacs-lisp
@@ -636,7 +712,7 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
 **** Templates
 #+begin_src emacs-lisp
 (after! org-capture
-  (load "~/.doom.d/org-imdb/org-imdb.el")
+  ;;(load "~/.doom.d/org-imdb/org-imdb.el")
 
   (setq org-capture-templates
         (doct '(("Todo" :keys "t"
@@ -759,123 +835,44 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
     (setq winum-assign-functions '(winum-assign-0-to-neotree))
     (setq winum-auto-assign-0-to-minibuffer nil))
 #+end_src
+** Treemacs
+#+begin_src emacs-lisp
+(use-package! treemacs
+  :config
+  (setq treemacs-select-when-already-in-treemacs 'close
+        treemacs-wrap-around nil
+        treemacs-show-hidden-files nil)
+
+
+  (map! :gni "M-0" 'treemacs-select-window
+        :leader "0" 'treemacs-select-window))
+#+end_src
 ** Dired
 #+begin_src emacs-lisp
 ;; (add-hook 'ranger-mode-hook 'dired-filter-mode)
 #+end_src
-** Emacs Application Framework
-#+begin_src emacs-lisp
-;; (use-package eaf)
-#+end_src
-** Spotify
-#+begin_src emacs-lisp
-;; (use-package spotify
-;;   :load-path "/home/silas/repositories/spotify.el"
-;;   :config
-;;   (load! "personal.el")
-;;   (define-key spotify-mode-map (kbd "C-c .") 'spotify-command-map))
-#+end_src
-
-Add a nice spotify Hydra
-#+begin_src emacs-lisp
-(when (featurep! :ui hydra)
-  ;; (defhydra spotify-hydra-main (:color green :hint nil)
-  ;;   "
-  ;; Current track: % -28`spotify-player-status
-
-  ;; ^Tracks^                       ^Playback^               ^Search
-  ;; ^^^^────────────────────────────────────────────
-  ;; _h_: previous track            _j_:   volume down       _t_: Track
-  ;; _l_: next track                _k_:   volume up         _p_: Playlists
-  ;; _a_: add track to playlist     _SPC_: toggle playback   _P_: Personal playlists
-  ;;  "
-  ;;   ("h" spotify-previous-track :exit (not hydra-prefix-arg))
-  ;;   ("l" spotify-next-track :exit (not hydra-prefix-arg))
-  ;;   ("j" spotify-volume-down)
-  ;;   ("k" spotify-volume-up)
-  ;;   ("t" spotify-track-search :exit (not hydra-prefix-arg))
-  ;;   ("p" spotify-playlist-search :exit t)
-  ;;   ("P" spotify-my-playlists :exit t)
-  ;;   ("a" spotify-track-add :exit t)
-  ;;   ("SPC" spotify-toggle-play :exit (not hydra-prefix-arg)))
-
-  (defhydra spotify-hydra-main (:color green :hint nil)
-    ""
-    ("h" spotify-previous-track "Previous" :exit (not hydra-prefix-arg) :column "Tracks")
-    ("l" spotify-next-track "Next" :exit (not hydra-prefix-arg) :column "Tracks")
-    ("SPC" spotify-toggle-play "Toggle" :exit (not hydra-prefix-arg) :column "Playback")
-    ("j" spotify-volume-down "Volume down" :column "Playback")
-    ("k" spotify-volume-up "Volume up" :column "Playback")
-    ("t" spotify-track-search "Search" :exit (not hydra-prefix-arg) :column "Tracks")
-    ("p" spotify-playlist-search "Search" :exit t :column "Playlists")
-    ("P" spotify-my-playlists "My playlists" :exit t :column "Playlists")
-    ("a" spotify-track-add "Add to playlist" :exit t :column "Playlists"))
-
-  (defun tot/display-spotify-hydra (&optional arg)
-    (interactive "P")
-    (setq hydra-prefix-arg arg)
-    (spotify-hydra-main/body))
-
-  (map!
-   :leader "o s" 'tot/display-spotify-hydra))
-#+end_src
-** Ytel
-#+begin_src emacs-lisp
-(defun ytel-watch ()
-  "Stream video at point in mpv."
-  (interactive)
-  (let* ((video (ytel-get-current-video))
-         (id    (ytel-video-id video)))
-    (start-process "ytel mpv" nil
-                   "mpv"
-                   (concat "https://www.youtube.com/watch?v=" id))
-    "--ytdl-format=bestvideo[height<=?720]+bestaudio/best")
-  (message "Starting streaming..."))
-
-(map! :map ytel-mode-map :ni
-      "RET" #'ytel-watch
-      )
-#+end_src
-
-** theme-magic
-#+begin_src emacs-lisp
-;; (add-hook 'doom-load-theme-hook 'theme-magic-from-emacs)
-#+end_src
-** Mu4e
-#+begin_src emacs-lisp
-;; (when (file-readable-p "~/.emacs.d/email.org")
-;;     (org-babel-load-file (expand-file-name "~/.emacs.d/email.org")))
-#+end_src
-
-Turn on queueing mode
-#+begin_src emacs-lisp
-;; (after! 'mu4e
-;; (setq smtpmail-queue-mail t
-;;       smtpmail-queue-dir   "~/Maildir/queue/cur"))
-#+end_src
-
-** Notmuch
-#+begin_src emacs-lisp
-(setq +notmuch-sync-backend 'offlineimap)
-#+end_src
-
-** EAF
-- Browser
-#+begin_src emacs-lisp
-(add-hook 'eaf-mode-hook
-          (lambda ()
-            (setq eaf-mode-map (make-sparse-keymap))
-            (map! :map eaf-mode-map
-                  :n "j" 'eaf-proxy-scroll_up
-                  :n "k" 'eaf-proxy-scroll_down
-                  :n "d" 'eaf-proxy-scroll_up_page
-                  :n "u" 'eaf-proxy-scroll_down_page
-                  :n "i" 'evil-insert-state
-                  :n "i" 'eaf-proxy-insert_or_focus_input)))
-#+end_src
-
 ** Avy
+Custom Avy commands
 #+begin_src emacs-lisp
+(defun tot/avy-goto-line-goto-word (&optional direction arg)
+  "Jump to a word start on the current line only."
+  (interactive "P")
+  (if arg
+      (let* ((beginning (save-excursion (pcase direction
+                                          ("next" (evil-next-line arg))
+                                          ("previous" (evil-previous-line arg)))
+                                        (beginning-of-line)
+                                        (point)))
+             (end (save-excursion (pcase direction
+                                    ("next" (evil-next-line arg))
+                                    ("previous" (evil-previous-line arg)))
+                                  (end-of-line)
+                                  (point))))
+        (avy-goto-word-0 nil beginning end))
+    (progn (avy-goto-line)
+           (avy-with avy-goto-word-0
+             (avy-goto-word-0 nil (line-beginning-position) (line-end-position))))))
+
 (defun tot/avy-goto-char-timer (&optional arg)
   "Read one or many consecutive chars and jump to the first one.
 The window scope is determined by `avy-all-windows' (ARG negates it)."
@@ -890,17 +887,26 @@ The window scope is determined by `avy-all-windows' (ARG negates it)."
         (goto-char (car (car (car avy--old-cands)))))
       (length avy--old-cands))))
 
+#+end_src
+
+Avy setup
+#+begin_src emacs-lisp
 (after! avy
   (setq avy-single-candidate-jump t)
-  (map! :n "M-f" 'tot/avy-goto-char-timer)
+  ;;(map! :n "M-f" 'tot/avy-goto-char-timer)
   (setq avy-timeout-seconds 0.3))
+
+(map! :n
+      ;; "M-f" 'tot/avy-goto-line-goto-word
+      "M-f" 'avy-goto-char-2)
 #+end_src
 
 ** Elfeed
 #+begin_src emacs-lisp
-(map! :after elfeed
-      :g
-      :desc "Open Elfeed" :leader "o F" 'elfeed)
+(use-package! elfeed
+  :config
+    (map! :g
+          :desc "Open Elfeed" :leader "o F" 'elfeed))
 #+end_src
 
 ** Company
@@ -948,6 +954,39 @@ Scuffed way to create java projects
 (after! lsp
   (map! :map lsp-ui-mode-map
         :n "RET" 'lsp-ui-sideline-apply-code-actions))
+#+end_src
+
+#+begin_src emacs-lisp
+(after! meghanada
+
+  (defun tot/java-meghanada-parse-pom ()
+    (let* ((root doom-modeline--project-root)
+           (parse-tree (assq 'project (xml-parse-file (concat root "pom.xml")))))
+      `((project-root . ,doom-modeline--project-root)
+        (group-id . ,(alist-get 'groupId
+                                parse-tree))
+        (name . ,(alist-get 'name
+                            parse-tree))
+        (artifact-id . ,(alist-get 'artifactId
+                                   parse-tree)))))
+
+
+  (defun tot/java-meghanada-compile-project ()
+    (interactive)
+    (let* ((properties (tot/java-meghanada-parse-pom))
+           (default-directory (alist-get 'project-root properties)))
+      (start-process "compile-java" "*tot java compile*" "mvn" "package")))
+
+  (defun tot/java-meghanada-run-project ()
+    (interactive)
+    (let* ((properties (tot/java-meghanada-parse-pom))
+           (default-directory (alist-get 'project-root properties))
+           (artifact-id (alist-get 'artifact-id properties))
+           (group-id (alist-get 'group-id properties)))
+      (cd default-directory)
+      (start-process "java -cp "
+                     (concat "target " artifact-id " -1.0-SNAPSHOT.jar ")
+                     (concat group-id ".App")))))
 #+end_src
 ** aggressive indent
 #+begin_src emacs-lisp
@@ -1001,37 +1040,111 @@ Scuffed way to create java projects
         "vo"  :desc "view overal report" #'hledger-overall-report
         "a"   :desc    "add a new entry" #'my/hledger-new-entry))
 #+end_src
+** Beancount-mode
+#+begin_src emacs-lisp
+(use-package! beancount-mode
+  :after beancount-mode
+  :config
+  (add-to-list 'auto-mode-alist '("\\.beancount\\'" . beancount-mode)))
+#+end_src
+
+** haskell
+#+begin_src emacs-lisp
+(add-hook 'haskell-mode-hook #'lsp)
+#+end_src
+
+#+begin_src emacs-lisp
+(setq haskell-process-wrapper-function
+      (lambda (args) (apply 'nix-shell-command (nix-current-sandbox) args)))
+
+#+end_src
+** ng2-mode
+#+begin_src emacs-lisp
+(with-eval-after-load 'typescript-mode (add-hook 'typescript-mode-hook #'lsp))
+#+end_src
+** Fira-code-mode
+#+begin_src emacs-lisp
+;;(after! fira-code-mode
+  ;;(global-fira-code-mode)
+  ;;(fira-code-mode-set-font))
+#+end_src
+** direnv
+#+begin_src emacs-lisp
+(use-package! direnv
+  :config
+  (direnv-mode))
+#+end_src
+** python
+#+begin_src emacs-lisp
+(map! :mode python-mode
+      :localleader "p" #'poetry)
+#+end_src
+
+** C++
+
+#+begin_src emacs-lisp
+(map! :map c++-mode-map
+      :i "C-<tab>" #'yas-next-field-or-maybe-expand
+      :desc "Make compile" :localleader :n "c" #'counsel-compile)
+#+end_src
+
+#+RESULTS:
+
+** Nix
+#+begin_src emacs-lisp
+(add-hook 'nix-mode-hook #'lsp)
+#+end_src
+
+** Rust
+#+begin_src emacs-lisp
+;; (after! rustic
+;;   (setq rustic-lsp-server 'rls))
+#+end_src
+
+** LSP
+#+begin_src emacs-lisp
+(after! lsp
+  (setq lsp-ui-sideline-show-code-actions t))
+#+end_src
+** Tree-sitter
+#+begin_src emacs-lisp
+(use-package! tree-sitter
+  :config
+  ;; activate tree-sitter on any buffer containing code for which it has a parser available
+  (global-tree-sitter-mode)
+  ;; you can easily see the difference tree-sitter-hl-mode makes for python, ts or tsx
+  ;; by switching on and off
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+
+(use-package! tree-sitter-langs
+  :after tree-sitter)
+#+end_src
+** Javascript/Typescript
+#+begin_src emacs-lisp
+(map! :map 'typescript-mode-map
+      :leader "t i" #'lsp-ui-sideline-toggle-symbols-info)
+#+end_src
+
+Use prettier-emacs for file formatting in projects
+#+begin_src emacs-lisp
+(use-package! prettier-js
+  :hook (web-mode . prettier-js-mode)
+  :hook (js2-mode . prettier-js-mode)
+  :hook (typescript-mode . prettier-js-mode)
+  :hook (css-mode . prettier-js-mode))
+#+end_src
+
 * Hooks
 #+begin_src emacs-lisp
 (add-hook 'delete-frame-hook '+workspace/delete)
 ;;(add-hook 'emacs-startup-hook 'org-agenda-list)
 
-(remove-hook! '(org-mode-hook
-               markdown-mode-hook
-               TeX-mode-hook
-               rst-mode-hook
-               mu4e-compose-mode-hook
-               message-mode-hook
-               git-commit-mode-hook)
-             #'flyspell-mode
-             )
-#+end_src
-
-Disable =ivy-posframe-mode= when frame is too small
-
-#+begin_src emacs-lisp
-(after! (ivy counsel ivy-posframe)
-  (setq ivy-posframe-width 110
-        ivy-posframe-height 40)
-
-  (defun tot/ivy-posframe-if-frame-size (&rest _)
-    "Function for `window-size-change-functions`."
-    (if (and (> (frame-width) ivy-posframe-width)
-             (> (frame-height) ivy-posframe-height))
-        (ivy-posframe-mode 1)
-      (ivy-posframe-mode 0)))
-
-  (add-hook 'window-size-change-functions 'tot/ivy-posframe-if-frame-size)
-  ;;(setq ivy-posframe-parameters '((parent-frame nil)))
+(remove-hook! '(markdown-mode-hook
+                TeX-mode-hook
+                rst-mode-hook
+                mu4e-compose-mode-hook
+                message-mode-hook
+                git-commit-mode-hook)
+  #'flyspell-mode
   )
 #+end_src
