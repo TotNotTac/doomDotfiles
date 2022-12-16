@@ -843,7 +843,6 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
         treemacs-wrap-around nil
         treemacs-show-hidden-files nil)
 
-
   (map! :gni "M-0" 'treemacs-select-window
         :leader "0" 'treemacs-select-window))
 #+end_src

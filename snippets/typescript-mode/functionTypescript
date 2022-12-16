@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: functionTypescript
+# key: f
+# --
+$1($2): $3 {
+   $0
+}
