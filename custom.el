@@ -3,8 +3,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(avy-style 'words)
  '(elfeed-feeds
-   '("https://www.youtube.com/feeds/videos.xml?channel_id=UCVw8WSz1c_cazwOA0Yk_P_w"))
+   '("https://feeds.nos.nl/nosnieuwsalgemeen" "https://www.youtube.com/feeds/videos.xml?channel_id=UCVw8WSz1c_cazwOA0Yk_P_w"))
  '(org-startup-folded 'show2levels)
  '(safe-local-variable-values
    '((eval org-babel-execute-buffer)
@@ -29,16 +30,16 @@
      (haskell-process-use-ghci . t)
      (haskell-indent-spaces . 4)
      (eval progn
-           (tide-mode)
-           (tide-restart-server))
+      (tide-mode)
+      (tide-restart-server))
      (eval setq lsp-clients-angular-language-server-command
-           (let
-               ((curr-proj-root
-                 (projectile-project-root)))
-             `("node" ,(concat curr-proj-root "node_modules/@angular/language-server")
-               "--ngProbeLocations" ,(concat curr-proj-root "node_modules")
-               "--tsProbeLocations" ,(concat curr-proj-root "node_modules")
-               "--stdio")))
+      (let
+          ((curr-proj-root
+            (projectile-project-root)))
+        `("node" ,(concat curr-proj-root "node_modules/@angular/language-server")
+          "--ngProbeLocations" ,(concat curr-proj-root "node_modules")
+          "--tsProbeLocations" ,(concat curr-proj-root "node_modules")
+          "--stdio")))
      (haskell-compile-command "nix-build && result/bin/app")))
  '(send-mail-function 'mailclient-send-it)
  '(smtpmail-smtp-server "smtp.gmail.com")
@@ -51,4 +52,5 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(magit-branch-current ((t (:box (:line-width (2 . 2) :color "black")))))
- '(magit-head ((t (:box nil :inherit magit-branch-local)))))
+ '(magit-head ((t (:box nil :inherit magit-branch-local))))
+ '(ts-fold-replacement-face ((t (:foreground nil :box nil :inherit font-lock-comment-face :weight light)))))

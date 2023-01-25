@@ -12,10 +12,10 @@
 (fringe-mode 0)
 (setq-default line-spacing 1)
 
-(setq doom-theme-light 'leuven)
-(setq doom-theme-dark 'doom-monokai-spectrum)
+;; (setq doom-theme-light 'leuven)
+;; (setq doom-theme-dark 'doom-monokai-spectrum)
 
-(setq doom-theme doom-theme-light)
+;; (setq doom-theme doom-theme-light)
 
 (setq org-directory "~/org/")
 (setq display-line-numbers-type 'relative)
@@ -24,6 +24,8 @@
 
 (setq doom-fallback-buffer-name "► Doom"
       +doom-dashboard-name "► Dashboard")
+
+(setq emacs-everywhere-frame-name-format "emacs-everywhere")
 #+end_src
 
 * Personal
@@ -70,7 +72,6 @@ Sql settings
   (interactive)
   (search-forward-regexp "[\"\)']"))
 
-
 (defun tot/save-and-kill-buffer (&optional arg)
   "Save a buffer before killing"
   (interactive "P")
@@ -107,13 +108,6 @@ Sql settings
 
   (sx-search "stackoverflow" query))
 
-(defun tot/insert-filename ()
-  (interactive)
-  (counsel--find-file-1
- "Find file: " ""
- 'insert
- 'test))
-
 (when (featurep! :editor multiple-cursors)
     (defun tot/make-mc-in-selection (start end)
     (interactive "r")
@@ -130,18 +124,6 @@ Sql settings
             (right-char)
             (re-search-forward regex-string))))
     (evil-mc-skip-and-goto-prev-cursor)))
-
-(defmacro tot/ivy-read-and-execute (prompt collection &rest args)
-  "Wrapper around `ivy-read', except for the COLLECTION is an alist
-where the first entry is the selection for `ivy-read' and the second
-is a form that will be evaulated if that option is selected.
-
-E.g. (ivy-read-and-execute \"Say \" ((\"hi\" (message \"Hi\"))
-                                    (\"bye\" (message \"Bye\"))))
-If the you select `hi' then you get the message `Hi'
-"
-  `(pcase (ivy-read ,prompt ',collection ,@args)
-     ,@collection))
 
 (defmacro tot/add-digit-argument-def (name digit)
   `(defun ,name (&optional arg)
@@ -181,10 +163,8 @@ If the you select `hi' then you get the message `Hi'
   (interactive "P")
   (when arg
     (mapc (lambda (x)
-            (setq unread-command-events (nconc unread-command-events (list x)))
-            )
-          (string-to-vector (number-to-string arg))
-          ))
+            (setq unread-command-events (nconc unread-command-events (list x))))
+          (string-to-vector (number-to-string arg))))
   (setq unread-command-events (nconc unread-command-events (list 49))))
 
 (progn
@@ -200,9 +180,6 @@ If the you select `hi' then you get the message `Hi'
   (tot/add-digit-argument-def tot/add-digit-argument-0 57))
 #+end_src
 
-#+RESULTS:
-: tot/add-digit-argument-0
-
 * Keymap
 #+begin_src emacs-lisp
 
@@ -211,7 +188,7 @@ If the you select `hi' then you get the message `Hi'
   "t a" #'auto-fill-mode)
  :v "V" 'er/contract-region
  :v "v" 'er/expand-region
- :i "M-TAB" 'tot/break-out-string-or-parens
+ :i "C-TAB" 'tot/break-out-string-or-parens
 
  :nvime
  "M-n" #'evil-buffer-new
@@ -399,16 +376,6 @@ Windows hydra
 #+begin_src emacs-lisp
 (setq calc-algebraic-mode t)
 #+end_src
-** CalFW
-#+begin_src emacs-lisp
-;; (after! (org org-agenda)
-;;   (map!
-;;    (:leader
-;;     "o c" #'cfw:open-org-calendar)
-;;    (:map (cfw:calendar-mode-map cfw:org-custom-map cfw:org-schedule-map)
-;;     "SPC" nil
-;;     "q" #'kill-current-buffer)))
-#+end_src
 ** Eshell
 Fix Eshell company lags
 #+begin_src emacs-lisp
@@ -478,6 +445,14 @@ Add some logical keybindings to smerge mode
 ;;       "k" #'smerge-keep-current
 ;;       "u" #'smerge-keep-upper
 ;;       "l" #'smerge-keep-lower)
+#+end_src
+*** Conventional commit
+#+begin_src emacs-lisp
+(defun conventional-commit/ask-scope (scope)
+  (interactive "sEnter scope: ")
+  (if (not (string-empty-p scope))
+      (concat "(" scope ")")
+    ""))
 #+end_src
 ** Org
 
@@ -841,16 +816,14 @@ Sadly the delete-other-windows doesn't work since ~org-capture~ isn't done yet. 
   :config
   (setq treemacs-select-when-already-in-treemacs 'close
         treemacs-wrap-around nil
-        treemacs-show-hidden-files nil)
+        treemacs-show-hidden-files nil
+        treemacs-project-follow-mode t)
 
   (map! :gni "M-0" 'treemacs-select-window
         :leader "0" 'treemacs-select-window))
 #+end_src
-** Dired
-#+begin_src emacs-lisp
-;; (add-hook 'ranger-mode-hook 'dired-filter-mode)
-#+end_src
 ** Avy
+
 Custom Avy commands
 #+begin_src emacs-lisp
 (defun tot/avy-goto-line-goto-word (&optional direction arg)
@@ -890,14 +863,229 @@ The window scope is determined by `avy-all-windows' (ARG negates it)."
 
 Avy setup
 #+begin_src emacs-lisp
-(after! avy
-  (setq avy-single-candidate-jump t)
+(use-package! avy
+  :after avy
+  :config
+  (setq avy-single-candidate-jump nil)
   ;;(map! :n "M-f" 'tot/avy-goto-char-timer)
-  (setq avy-timeout-seconds 0.3))
+  (setq avy-timeout-seconds 0.3)
 
-(map! :n
-      ;; "M-f" 'tot/avy-goto-line-goto-word
-      "M-f" 'avy-goto-char-2)
+  (setq avy-style 'at-full)
+
+  (evil-snipe-mode 0)
+
+  (map! :n
+        "M-f" (cmd!! 'evil-avy-goto-subword-1 1)
+        :n "s" 'evil-avy-goto-word-1-below
+        :n "S" 'evil-avy-goto-word-1-above)
+
+  (setq avy-keys '(?a ?s ?d ?f ?g ?j ?l ?o
+                   ?v ?b ?n ?, ?/ ?u ?p ?e ?.
+                   ?c ?q ?' ?\;))
+
+  (setq avy-dispatch-alist '((?m . avy-action-mark)
+                             (?i . avy-action-ispell)
+                             (?z . avy-action-zap-to-char)
+                             (?  . avy-action-embark)
+                             (?= . avy-action-define)
+                             (67108896 . avy-action-mark-to-char)
+                             (67108925 . avy-action-tuxi)
+                             ;; (?W . avy-action-tuxi)
+                             (?h . avy-action-helpful)
+                             (?x . avy-action-exchange)
+
+                             (11 . avy-action-kill-line)
+                             (25 . avy-action-yank-line)
+
+                             (?k . avy-action-kill-stay)
+                             (?y . avy-action-yank)
+                             (?t . avy-action-teleport)
+
+                             (?W . avy-action-copy-whole-line)
+                             (?K . avy-action-kill-whole-line)
+                             (?Y . avy-action-yank-whole-line)
+                             (?T . avy-action-teleport-whole-line))))
+#+end_src
+
+Super cool avy commands copied from https://github.com/karthink/.emacs.d/blob/master/lisp/setup-avy.el
+
+#+begin_src emacs-lisp
+(defun avy-action-exchange (pt)
+  "Exchange sexp at PT with the one at point."
+  (set-mark pt)
+  (transpose-sexps 0))
+
+(defun avy-action-helpful (pt)
+  (save-excursion
+    (goto-char pt)
+    (helpful-at-point))
+  (select-window
+   (cdr (ring-ref avy-ring 0)))
+  t)
+
+(defun avy-action-define (pt)
+  (cl-letf (((symbol-function 'keyboard-quit)
+             #'abort-recursive-edit))
+    (save-excursion
+      (goto-char pt)
+      (command-execute '+lookup/definition))
+    (select-window
+     (cdr (ring-ref avy-ring 0))))
+  t)
+
+(defun avy-action-tuxi (pt)
+  (cl-letf (((symbol-function 'keyboard-quit)
+             #'abort-recursive-edit))
+    (save-excursion
+      (goto-char pt)
+      (google-search-at-point))
+    (select-window
+     (cdr (ring-ref avy-ring 0))))
+  t)
+
+(defun avy-action-embark (pt)
+  (unwind-protect
+      (save-excursion
+        (goto-char pt)
+        (embark-act))
+    (select-window
+     (cdr (ring-ref avy-ring 0))))
+  t)
+
+(defun avy-action-kill-line (pt)
+  (save-excursion
+    (goto-char pt)
+    (kill-line))
+  (select-window
+   (cdr (ring-ref avy-ring 0)))
+  t)
+
+(defun avy-action-copy-whole-line (pt)
+  (save-excursion
+    (goto-char pt)
+    (cl-destructuring-bind (start . end)
+        (bounds-of-thing-at-point 'line)
+      (copy-region-as-kill start end)))
+  (select-window
+   (cdr
+    (ring-ref avy-ring 0)))
+  t)
+
+(defun avy-action-kill-whole-line (pt)
+  (save-excursion
+    (goto-char pt)
+    (kill-whole-line))
+  (select-window
+   (cdr
+    (ring-ref avy-ring 0)))
+  t)
+
+(defun avy-action-yank-whole-line (pt)
+  (avy-action-copy-whole-line pt)
+  (save-excursion (yank))
+  t)
+
+(defun avy-action-teleport-whole-line (pt)
+  (avy-action-kill-whole-line pt)
+  (save-excursion (yank)) t)
+
+(defun avy-action-mark-to-char (pt)
+  (activate-mark)
+  (goto-char pt))
+
+(defun avy-action-ispell (pt)
+  "Auto correct word at PT."
+  (save-excursion
+    (goto-char pt)
+    (cond
+     ((eq avy-command 'avy-goto-line)
+      (ispell-region
+       (line-beginning-position)
+       (line-end-position)))
+     ((bound-and-true-p flyspell-mode)
+      (funcall avy-flyspell-correct-function))
+     ((looking-at-p "\\b")
+      (command-execute 'ispell-word))
+     (t
+      (progn
+        (backward-word)
+        (when (looking-at-p "\\b")
+          (command-execute 'ispell-word)))))))
+#+end_src
+
+This is a TERRIBLE hack to make sure the matching overlay goes after the match
+but also OVER the following text. What can I say? I'm a lazy bum.
+#+begin_src emacs-lisp
+(defun avy--overlay-post (path leaf)
+  "Create an overlay with PATH at LEAF.
+PATH is a list of keys from tree root to LEAF.
+LEAF is normally ((BEG . END) . WND)."
+  (let* ((path (mapcar #'avy--key-to-char path))
+         (str (propertize
+               (apply #'string (reverse path))
+               'face 'avy-lead-face))
+         (len (length path))
+         (beg (+ 2 (avy-candidate-beg leaf)))
+         (wnd (cdr leaf))
+         end)
+    (dotimes (i len)
+      (set-text-properties i (1+ i)
+                           `(face ,(nth i avy-lead-faces))
+                           str))
+    (when (eq avy-style 'de-bruijn)
+      (setq str (concat
+                 (propertize avy-current-path
+                             'face 'avy-lead-face-1)
+                 str))
+      (setq len (length str)))
+    (with-selected-window wnd
+      (save-excursion
+        (goto-char beg)
+        (let* ((lep (if (bound-and-true-p visual-line-mode)
+                        (save-excursion
+                          (end-of-visual-line)
+                          (point))
+                      (line-end-position)))
+               ;; `end-of-visual-line' is bugged sometimes
+               (lep (if (< lep beg)
+                        (line-end-position)
+                      lep))
+               (len-and-str (avy--update-offset-and-str len str lep)))
+          (setq len (car len-and-str))
+          (setq str (cdr len-and-str))
+          (setq end (if (= beg lep)
+                        (1+ beg)
+                      (min (+ beg
+                              (if (eq (char-after) ?\t)
+                                  1
+                                len))
+                           lep)))
+          (when (and (bound-and-true-p visual-line-mode)
+                     (> len (- end beg))
+                     (not (eq lep beg)))
+            (setq len (- end beg))
+            (let ((old-str (apply #'string (reverse path))))
+              (setq str
+                    (substring
+                     (propertize
+                      old-str
+                      'face
+                      (if (= (length old-str) 1)
+                          'avy-lead-face
+                        'avy-lead-face-0))
+                     0 len)))))))
+    (avy--overlay
+     str beg end wnd
+     (lambda (str old-str)
+       (cond ((string= old-str "\n")
+              (concat str "\n"))
+             ((string= old-str "\t")
+              (concat str (make-string (max (- tab-width len) 0) ?\ )))
+             (t
+              ;; add padding for wide-width character
+              (if (eq (string-width old-str) 2)
+                  (concat str " ")
+                str)))))))
 #+end_src
 
 ** Elfeed
@@ -908,17 +1096,6 @@ Avy setup
           :desc "Open Elfeed" :leader "o F" 'elfeed))
 #+end_src
 
-** Company
-#+begin_src emacs-lisp
-
-(map! :after company
- :map company-active-map
-      "<tab>" 'yas-expand)
-
-(setq company-backends '((company-files
-                          company-capf))
-      company-dabbrev-other-buffers nil)
-#+end_src
 ** Java
 #+begin_src emacs-lisp
 (setenv "JAVA_HOME"  "/usr/lib/jvm/default")
@@ -1057,16 +1234,6 @@ Scuffed way to create java projects
       (lambda (args) (apply 'nix-shell-command (nix-current-sandbox) args)))
 
 #+end_src
-** ng2-mode
-#+begin_src emacs-lisp
-(with-eval-after-load 'typescript-mode (add-hook 'typescript-mode-hook #'lsp))
-#+end_src
-** Fira-code-mode
-#+begin_src emacs-lisp
-;;(after! fira-code-mode
-  ;;(global-fira-code-mode)
-  ;;(fira-code-mode-set-font))
-#+end_src
 ** direnv
 #+begin_src emacs-lisp
 (use-package! direnv
@@ -1100,10 +1267,42 @@ Scuffed way to create java projects
 ;;   (setq rustic-lsp-server 'rls))
 #+end_src
 
-** LSP
+** Company
 #+begin_src emacs-lisp
-(after! lsp
-  (setq lsp-ui-sideline-show-code-actions t))
+
+(map! :after company
+ :map company-active-map
+      "<tab>" 'yas-expand)
+
+(setq company-backends '((company-files
+                          company-capf))
+      company-dabbrev-other-buffers nil)
+
+(after! company
+  (setq company-idle-delay 0.2
+        company-tooltip-idle-delay 0.2))
+#+end_src
+** LSP
+
+*** lsp-ui
+#+begin_src emacs-lisp
+(use-package! lsp-ui
+  :config
+  (setq lsp-ui-sideline-show-code-actions t
+        lsp-ui-doc-show-with-cursor t
+        lsp-ui-doc-show-with-mouse t))
+#+end_src
+
+#+begin_src emacs-lisp
+(after! (:and lsp treemacs)
+  (lsp-treemacs-sync-mode 1))
+#+end_src
+** eglot
+#+begin_src emacs-lisp
+(when (featurep! eglot)
+  (use-package! eglot
+    :config
+    (add-hook 'go-mode-hook 'eglot)))
 #+end_src
 ** Tree-sitter
 #+begin_src emacs-lisp
@@ -1133,17 +1332,22 @@ Use prettier-emacs for file formatting in projects
   :hook (css-mode . prettier-js-mode))
 #+end_src
 
+** GoLang
+#+begin_src emacs-lisp
+;; (add-hook 'go-mode-hook 'lsp-mode)
+;; (add-hook 'go-mode-hook 'eglot)
+#+end_src
 * Hooks
 #+begin_src emacs-lisp
 (add-hook 'delete-frame-hook '+workspace/delete)
 ;;(add-hook 'emacs-startup-hook 'org-agenda-list)
 
-(remove-hook! '(markdown-mode-hook
-                TeX-mode-hook
-                rst-mode-hook
-                mu4e-compose-mode-hook
-                message-mode-hook
-                git-commit-mode-hook)
-  #'flyspell-mode
-  )
+;; (remove-hook! '(markdown-mode-hook
+;;                 TeX-mode-hook
+;;                 rst-mode-hook
+;;                 mu4e-compose-mode-hook
+;;                 message-mode-hook
+;;                 git-commit-mode-hook)
+;;   #'flyspell-mode
+;;   )
 #+end_src

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: conventional commit
+# key: <cc
+# --
+${1:$$(yas-choose-value '("fix" "feat" "build" "chore" "ci" "docs" "style" "refactor" "perf" "test"))}: $0

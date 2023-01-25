@@ -48,9 +48,8 @@
 (package! color-theme-sanityinc-tomorrow :recipe (:host github :repo "purcell/color-theme-sanityinc-tomorrow"))
 ;; (package! org-sidebar :recipe (:host github :repo "alphapapa/org-sidebar"))
 ;; (package! demo-it)
-(package! ivy-posframe :recipe (:host github :repo "tumashu/ivy-posframe"))
-(package! eaf :recipe (:host github :repo "manateelazycat/emacs-application-framework"
-                       :files ("*.el" "app" "core" "*.py")))
+;; (package! eaf :recipe (:host github :repo "manateelazycat/emacs-application-framework"
+;;                        :files ("*.el" "app" "core" "*.py")))
 ;; (package! calfw :recipe (:host github :repo "kiwanami/emacs-calfw"))
 (package! w3m)
 (package! sx)
@@ -77,7 +76,6 @@
 ;; (package! company-tabnine :recipe (:host github :repo "TommyX12/company-tabnine"
 ;;                                    :files ("*.el" "*.sh")))
 (package! aggressive-indent :recipe (:host github :repo "Malabarba/aggressive-indent-mode"))
-(package! lsp-java :recipe (:host github :repo "emacs-lsp/lsp-java"))
 (package! dap-mode)
 ;; (package! emacs-everywhere :recipe (:host github :repo "tecosaur/emacs-everywhere"))
 (package! autothemer :recipe (:host github :repo "jasonm23/autothemer"))
@@ -90,7 +88,6 @@
 (package! emacsql-sqlite3)
 (package! svg-lib)
 ;; (package! ng2-mode)
-(package! fira-code-mode)
 (package! emacs-direnv :recipe (:host github :repo "wbolster/emacs-direnv"))
 (package! nix-emacs :recipe (:host github :repo "travisbhartwell/nix-emacs"))
 (package! tao-theme-emacs :recipe (:host github :repo "11111000000/tao-theme-emacs"))
@@ -98,8 +95,7 @@
 (package! org-fragtog :recipe (:host github :repo "/io12/org-fragtog"))
 (package! org-modern :recipe (:host github :repo "minad/org-modern"))
 (package! jq-mode :recipe (:host github :repo "ljos/jq-mode"))
-(package! tree-sitter)
-(package! tree-sitter-langs)
 (package! combobulate :recipe (:host github :repo "mickeynp/combobulate"
                                :files ("*.el")))
-(package! prettier-emacs :recipe (:host github :repo "prettier/prettier-emacs"))
+;; (package! prettier-emacs :recipe (:host github :repo "prettier/prettier-emacs"))
+(package! olivetti)
