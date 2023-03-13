@@ -3,7 +3,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(avy-style 'words)
  '(elfeed-feeds
    '("https://feeds.nos.nl/nosnieuwsalgemeen" "https://www.youtube.com/feeds/videos.xml?channel_id=UCVw8WSz1c_cazwOA0Yk_P_w"))
  '(org-startup-folded 'show2levels)
@@ -53,4 +52,5 @@
  ;; If there is more than one, they won't work right.
  '(magit-branch-current ((t (:box (:line-width (2 . 2) :color "black")))))
  '(magit-head ((t (:box nil :inherit magit-branch-local))))
+ '(org-modern-statistics ((t (:inherit org-checkbox-statistics-todo))))
  '(ts-fold-replacement-face ((t (:foreground nil :box nil :inherit font-lock-comment-face :weight light)))))

@@ -82,8 +82,8 @@
 (package! shx-for-emacs :recipe (:host github :repo "riscy/shx-for-emacs"))
 (package! hledger-mode)
 (package! beancount-mode :recipe (:host github :repo "beancount/beancount-mode"))
-(package! haskell-mode)
-(package! lsp-haskell)
+;; (package! haskell-mode)
+;; (package! lsp-haskell)
 (package! emacsql)
 (package! emacsql-sqlite3)
 (package! svg-lib)
@@ -99,3 +99,6 @@
                                :files ("*.el")))
 ;; (package! prettier-emacs :recipe (:host github :repo "prettier/prettier-emacs"))
 (package! olivetti)
+(package! calctex :recipe (:host github :repo "johnbcoughlin/calctex"
+                           :files ("*.el" "calctex/*.el" "calctex-contrib/*.el" "org-calctex/*.el" "vendor")))
+(package! obsidian)

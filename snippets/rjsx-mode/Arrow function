@@ -2,6 +2,6 @@
 # name: Arrow with brackets
 # key: ->
 # --
-$1 => {
+($1) => {
      $0
 }

@@ -1,5 +1,4 @@
-# -*- mode: snippet -*-
-# name: conventional commit
 # key: <cc
+# name: conventional commit
 # --
-${1:$$(yas-choose-value '("fix" "feat" "build" "chore" "ci" "docs" "style" "refactor" "perf" "test"))}: $0
+${1:type$$(yas-choose-value '("fix" "feat" "build" "chore" "ci" "docs" "style" "refactor" "perf" "test"))}${2:(${3:scope})}${4:}: $0

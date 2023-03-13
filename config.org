@@ -7,7 +7,8 @@
 #+end_src
 * Doom related
 #+begin_src emacs-lisp
-(setq doom-font (font-spec :family "Fira Code Nerd Font" :size 12))
+;; (setq doom-font (font-spec :family "Fira Code Nerd Font" :size 12))
+(setq doom-font (font-spec :family "Fira Code Nerd Font Mono" :size 14))
 
 (fringe-mode 0)
 (setq-default line-spacing 1)
@@ -26,6 +27,34 @@
       +doom-dashboard-name "► Dashboard")
 
 (setq emacs-everywhere-frame-name-format "emacs-everywhere")
+#+end_src
+
++ TODO extract all of this to the right place
+#+begin_src emacs-lisp
+;; Fine grained undoing
+(setq evil-want-fine-undo t
+      ;; Keep cursor in the same position when jumping around
+      scroll-preserve-screen-position t
+      scroll-margin 2)
+
+(unless (string-match-p "^Power N/A" (battery))   ; On laptops...
+  (display-battery-mode 1))                       ; it's nice to know how much power you have
+
+;; (global-subword-mode 1)                           ; Iterate through CamelCase words
+
+(map!
+ ;; Navigation
+ :n "<left>"     #'evil-window-left
+ :n "<down>"     #'evil-window-down
+ :n "<up>"       #'evil-window-up
+ :n "<right>"    #'evil-window-right)
+
+(setq-default major-mode 'org-mode)
+
+;; Ask for buffer after splitting a window
+;; (defadvice! prompt-for-buffer (&rest _)
+;;   :after '(evil-window-split evil-window-vsplit)
+;;   (consult-buffer))
 #+end_src
 
 * Personal
@@ -319,6 +348,11 @@ Windows hydra
 #+end_src
 
 * Packages
+** Spelling
+#+begin_src emacs-lisp
+(use-package! flyspell
+  :config (flyspell-mode-off))
+#+end_src
 ** persp-mode
 #+begin_src emacs-lisp
 (after! persp-mode
@@ -374,8 +408,105 @@ Windows hydra
 
 ** Calc
 #+begin_src emacs-lisp
-(setq calc-algebraic-mode t)
+(setq calc-algebraic-mode nil)
 #+end_src
+
+*** Embedded calc
+#+begin_src emacs-lisp
+(map! :map calc-mode-map
+      :after calc
+      :localleader
+      :desc "Embedded calc (toggle)" "e" #'calc-embedded)
+(map! :map org-mode-map
+      :after org
+      :localleader
+      :desc "Embedded calc (toggle)" "E" #'calc-embedded)
+(map! :map latex-mode-map
+      :after latex
+      :localleader
+      :desc "Embedded calc (toggle)" "e" #'calc-embedded)
+#+end_src
+
+Unfortunately this operates without the (rather informative) calculator and trail buffers, but we can advice it that we would rather like those in a side panel.
+#+begin_src emacs-lisp
+(defvar calc-embedded-trail-window nil)
+(defvar calc-embedded-calculator-window nil)
+
+(advice-remove 'calc-embedded 'calc-embedded-with-side-pannel)
+(defadvice! calc-embedded-with-side-pannel (&rest _)
+  :after #'calc-do-embedded
+  (when calc-embedded-trail-window
+    (ignore-errors
+      (delete-window calc-embedded-trail-window))
+    (setq calc-embedded-trail-window nil))
+  (when calc-embedded-calculator-window
+    (ignore-errors
+      (delete-window calc-embedded-calculator-window))
+    (setq calc-embedded-calculator-window nil))
+  (when (and calc-embedded-info
+             (> (* (window-width) (window-height)) 1200))
+    (let ((main-window (selected-window))
+          (vertical-p (> (window-width) 80)))
+      (select-window
+       (setq calc-embedded-trail-window
+             (if vertical-p
+                 (split-window-horizontally (- (max 30 (/ (window-width) 3))))
+               (split-window-vertically (- (max 8 (/ (window-height) 4)))))))
+      (switch-to-buffer "*Calc Trail*")
+      (select-window
+       (setq calc-embedded-calculator-window
+             (if vertical-p
+                 (split-window-vertically -6)
+               (split-window-horizontally (- (/ (window-width) 2))))))
+      (switch-to-buffer "*Calculator*")
+      (select-window main-window)))
+  (ignore-errors
+    (select-window calc-embedded-trail-window)
+    (delete-window)))
+#+end_src
+
+*** Calctex
+#+begin_src emacs-lisp
+(use-package! calctex
+  :commands calctex-mode
+  :init
+  (add-hook 'calc-mode-hook #'calctex-mode)
+  :config
+  (setq calctex-additional-latex-packages "
+\\usepackage[usenames]{xcolor}
+\\usepackage{soul}
+\\usepackage{adjustbox}
+\\usepackage{amsmath}
+\\usepackage{amssymb}
+\\usepackage{siunitx}
+\\usepackage{cancel}
+\\usepackage{mathtools}
+\\usepackage{mathalpha}
+\\usepackage{xparse}
+\\usepackage{arevmath}"
+        calctex-additional-latex-macros
+        (concat calctex-additional-latex-macros
+                "\n\\let\\evalto\\Rightarrow"))
+  (defadvice! no-messaging-a (orig-fn &rest args)
+    :around #'calctex-default-dispatching-render-process
+    (let ((inhibit-message t) message-log-max)
+      (apply orig-fn args)))
+  ;; Fix hardcoded dvichop path (whyyyyyyy)
+  (let ((vendor-folder (concat (file-truename doom-local-dir)
+                               "straight/"
+                               (format "build-%s" emacs-version)
+                               "/calctex/vendor/")))
+    (setq calctex-dvichop-sty (concat vendor-folder "texd/dvichop")
+          calctex-dvichop-bin (concat vendor-folder "texd/dvichop")))
+  (unless (file-exists-p calctex-dvichop-bin)
+    (message "CalcTeX: Building dvichop binary")
+    (let ((default-directory (file-name-directory calctex-dvichop-bin)))
+      (call-process "make" nil nil nil))))
+
+(setq calc-angle-mode 'rad  ; radians are rad
+      calc-symbolic-mode t) ; keeps expressions like \sqrt{2} irrational for as long as possible
+#+end_src
+
 ** Eshell
 Fix Eshell company lags
 #+begin_src emacs-lisp
@@ -470,6 +601,11 @@ Add some logical keybindings to smerge mode
 To insert images in org mode from the clipboard
 #+begin_src emacs-lisp
 (setq-default org-download-image-dir "~/org/attachments")
+#+end_src
+
+Set org duration format to hours and minutes instead of days and hours.
+#+begin_src emacs-lisp
+(setq org-duration-format 'h:mm)
 #+end_src
 
 *** org-roam :ATTACH:
@@ -637,6 +773,87 @@ Load org-fragtog for live Latex previews
 Load org-modern for nice looking org documents
 #+begin_src emacs-lisp
 ;; (add-hook 'org-mode-hook #'org-modern-mode)
+#+end_src
+#+begin_src emacs-lisp
+(use-package! org-modern
+  :hook (org-mode . org-modern-mode)
+  :config
+  (setq org-modern-star '("◉" "○" "✸" "✿" "✤" "✜" "◆" "▶")
+        org-modern-table-vertical 1
+        org-modern-table-horizontal 0.2
+        org-modern-list '((43 . "➤")
+                          (45 . "–")
+                          (42 . "•"))
+        org-modern-todo-faces
+        '(("TODO" :inverse-video t :inherit org-todo)
+          ("PROJ" :inverse-video t :inherit +org-todo-project)
+          ("STRT" :inverse-video t :inherit +org-todo-active)
+          ("[-]"  :inverse-video t :inherit +org-todo-active)
+          ("HOLD" :inverse-video t :inherit +org-todo-onhold)
+          ("WAIT" :inverse-video t :inherit +org-todo-onhold)
+          ("[?]"  :inverse-video t :inherit +org-todo-onhold)
+          ("KILL" :inverse-video t :inherit +org-todo-cancel)
+          ("NO"   :inverse-video t :inherit +org-todo-cancel))
+        org-modern-footnote
+        (cons nil (cadr org-script-display))
+        org-modern-block-fringe nil
+        org-modern-block-name
+        '((t . t)
+          ("src" "»" "«")
+          ("example" "»–" "–«")
+          ("quote" "❝" "❞")
+          ("export" "⏩" "⏪"))
+        org-modern-progress nil
+        org-modern-priority nil
+        org-modern-horizontal-rule (make-string 36 ?─)
+        org-modern-keyword
+        '((t . t)
+          ("title" . "𝙏")
+          ("subtitle" . "𝙩")
+          ("author" . "𝘼")
+          ("email" . #("" 0 1 (display (raise -0.14))))
+          ("date" . "𝘿")
+          ("property" . "☸")
+          ("options" . "⌥")
+          ("startup" . "⏻")
+          ("macro" . "𝓜")
+          ("bind" . #("" 0 1 (display (raise -0.1))))
+          ("bibliography" . "")
+          ("print_bibliography" . #("" 0 1 (display (raise -0.1))))
+          ("cite_export" . "⮭")
+          ("print_glossary" . #("ᴬᶻ" 0 1 (display (raise -0.1))))
+          ("glossary_sources" . #("" 0 1 (display (raise -0.14))))
+          ("include" . "⇤")
+          ("setupfile" . "⇚")
+          ("html_head" . "🅷")
+          ("html" . "🅗")
+          ("latex_class" . "🄻")
+          ("latex_class_options" . #("🄻" 1 2 (display (raise -0.14))))
+          ("latex_header" . "🅻")
+          ("latex_header_extra" . "🅻⁺")
+          ("latex" . "🅛")
+          ("beamer_theme" . "🄱")
+          ("beamer_color_theme" . #("🄱" 1 2 (display (raise -0.12))))
+          ("beamer_font_theme" . "🄱𝐀")
+          ("beamer_header" . "🅱")
+          ("beamer" . "🅑")
+          ("attr_latex" . "🄛")
+          ("attr_html" . "🄗")
+          ("attr_org" . "⒪")
+          ("call" . #("" 0 1 (display (raise -0.15))))
+          ("name" . "⁍")
+          ("header" . "›")
+          ("caption" . "☰")
+          ("results" . "🠶")))
+  (custom-set-faces! '(org-modern-statistics :inherit org-checkbox-statistics-todo)))
+
+(after! spell-fu
+  (cl-pushnew 'org-modern-tag (alist-get 'org-mode +spell-excluded-faces-alist)))
+#+end_src
+
+#+begin_src emacs-lisp
+(setq org-src-window-setup 'plain)
+(set-popup-rule! ".*Org Src.*" :ignore t)
 #+end_src
 
 *** Visuals
@@ -1166,8 +1383,11 @@ Scuffed way to create java projects
 #+end_src
 ** aggressive indent
 #+begin_src emacs-lisp
-(add-hook 'lispy-mode-hook #'aggressive-indent-mode)
-(add-hook 'css-mode-hook #'aggressive-indent-mode)
+;; (add-hook 'lispy-mode-hook #'aggressive-indent-mode)
+;; (add-hook 'css-mode-hook #'aggressive-indent-mode)
+;; (use-package! aggressive-indent
+;;   :config
+;;   (global-aggressive-indent-mode 1))
 #+end_src
 ** Centaur tabs
 #+begin_src emacs-lisp
@@ -1325,17 +1545,35 @@ Scuffed way to create java projects
 
 Use prettier-emacs for file formatting in projects
 #+begin_src emacs-lisp
-(use-package! prettier-js
-  :hook (web-mode . prettier-js-mode)
-  :hook (js2-mode . prettier-js-mode)
-  :hook (typescript-mode . prettier-js-mode)
-  :hook (css-mode . prettier-js-mode))
+;; (use-package! prettier-js
+;;   :hook (web-mode . prettier-js-mode)
+;;   :hook (js2-mode . prettier-js-mode)
+;;   :hook (typescript-mode . prettier-js-mode)
+;;   :hook (css-mode . prettier-js-mode))
 #+end_src
 
 ** GoLang
 #+begin_src emacs-lisp
 ;; (add-hook 'go-mode-hook 'lsp-mode)
 ;; (add-hook 'go-mode-hook 'eglot)
+
+#+end_src
+** Obsidian.el
+#+begin_src emacs-lisp
+(use-package obsidian
+  :config
+  (obsidian-specify-path "~/MY_OBSIDIAN_FOLDER")
+  (global-obsidian-mode t)
+  :custom
+  ;; This directory will be used for `obsidian-capture' if set.
+  (obsidian-inbox-directory "Inbox")
+  :bind (:map obsidian-mode-map
+  ;; Replace C-c C-o with Obsidian.el's implementation. It's ok to use another key binding.
+  ("C-c C-o" . obsidian-follow-link-at-point)
+  ;; Jump to backlinks
+  ("C-c C-b" . obsidian-backlink-jump)
+  ;; If you prefer you can use `obsidian-insert-link'
+  ("C-c C-l" . obsidian-insert-wikilink)))
 #+end_src
 * Hooks
 #+begin_src emacs-lisp
